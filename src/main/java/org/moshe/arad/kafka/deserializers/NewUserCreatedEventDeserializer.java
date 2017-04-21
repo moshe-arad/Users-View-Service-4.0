@@ -9,13 +9,15 @@ import org.apache.kafka.common.errors.SerializationException;
 import org.apache.kafka.common.serialization.Deserializer;
 import org.moshe.arad.entities.BackgammonUser;
 import org.moshe.arad.entities.Location;
-import org.moshe.arad.kafka.events.EventFactory;
-import org.moshe.arad.kafka.events.Events;
 import org.moshe.arad.kafka.events.NewUserCreatedEvent;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class NewUserCreatedEventDeserializer implements Deserializer<NewUserCreatedEvent>{
 
 	private String encoding = "UTF8";
+	
+	@Autowired
+	private NewUserCreatedEvent newUserCreatedEvent;
 	
 	@Override
 	public void close() {
@@ -47,11 +49,10 @@ public class NewUserCreatedEventDeserializer implements Deserializer<NewUserCrea
             String location = deserializeString(buf); 
             Date date = new Date(buf.getLong());
             
-            return (NewUserCreatedEvent) EventFactory.getEvent(Events.NewUserCreatedEventWithSameDate, 
-            		new BackgammonUser(userName, password, firstName, lastName, email, Location.valueOf(location)), 
-            		date);
-            	            		           
-            
+            newUserCreatedEvent.setBackgammonUser(new BackgammonUser(userName, password, firstName, lastName, email, Location.valueOf(location)));
+            newUserCreatedEvent.setArrived(date);
+            return newUserCreatedEvent;
+            	            		                      
         } catch (Exception e) {
             throw new SerializationException("Error when deserializing byte[] to CreateNewUserCommand");
         }

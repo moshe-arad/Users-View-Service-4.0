@@ -1,43 +1,42 @@
 package org.moshe.arad;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
-import org.moshe.arad.entities.BackgammonUser;
-import org.moshe.arad.kafka.consumers.NewUserCreatedEventConsumer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.SetOperations;
 import org.springframework.stereotype.Service;
 
 @Service
 public class UsersView {
 
-	private Map<String,BackgammonUser> users = new HashMap<>(1000);
-	
-	private ExecutorService executor = Executors.newFixedThreadPool(6);
-	
-	private Logger logger = LoggerFactory.getLogger(UsersView.class);
-	
 	@Autowired
-	private NewUserCreatedEventConsumer newUserCreatedEventConsumer;
+	private SetOperations<String, String> setOperations;
 	
-	public void addBackgammonUserToLobby(BackgammonUser user){
-		users.put(user.getUserName(), user);
+	public static final String EMAILS_KEY = "emails";
+	public static final String USER_NAMES_KEY = "userNames";
+	
+	public Object userNameLock = new Object();
+	public Object emailLock = new Object();
+	
+	public boolean isEmailAvailable(String email){
+		synchronized (emailLock) {
+			return !setOperations.isMember(EMAILS_KEY, email);
+		}
 	}
 	
-	public void acceptNewEvents(){
-		logger.info("Started to accept new events from services...");
-		executor.execute(newUserCreatedEventConsumer);
-		logger.info("Stopped to accept new events from services...");
+	public boolean isUserNameAvailable(String userName){
+		synchronized (userNameLock) {
+			return !setOperations.isMember(USER_NAMES_KEY, userName);
+		}		
 	}
 	
-	public void shutdown(){
-		newUserCreatedEventConsumer.setRunning(false);
-		newUserCreatedEventConsumer.getScheduledExecutor().shutdown();
-		
-		this.executor.shutdown();
+	public void addEmail(String email){
+		synchronized (emailLock) {
+			if(this.isEmailAvailable(email)) setOperations.add(EMAILS_KEY, email);
+		}		
+	}
+
+	public void addUserName(String userName){
+		synchronized (userNameLock) {
+			if(this.isUserNameAvailable(userName)) setOperations.add(USER_NAMES_KEY, userName);
+		}		
 	}
 }
