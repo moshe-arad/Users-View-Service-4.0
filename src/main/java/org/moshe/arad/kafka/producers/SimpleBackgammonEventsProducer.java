@@ -15,6 +15,7 @@ import org.moshe.arad.kafka.producers.config.SimpleProducerConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 /**
  * 
@@ -25,13 +26,13 @@ import org.springframework.stereotype.Component;
  * important to set topic and properties before usage
  */
 @Component
+@Scope("prototype")
 public class SimpleBackgammonEventsProducer <T extends BackgammonEvent> implements SimpleProducer, Runnable {
 
 	private final Logger logger = LoggerFactory.getLogger(SimpleBackgammonEventsProducer.class);
 	
 	private SimpleProducerConfig simpleProducerConfig;
 	
-	@Autowired
 	private ConsumerToProducerQueue consumerToProducerQueue;
 	private ScheduledThreadPoolExecutor scheduledExecutor = (ScheduledThreadPoolExecutor) Executors.newScheduledThreadPool(6);
 	private boolean isRunning = true;
@@ -73,6 +74,7 @@ public class SimpleBackgammonEventsProducer <T extends BackgammonEvent> implemen
 		logger.info("Kafka producer closed.");
 	}
 
+	@SuppressWarnings("unchecked")
 	private void takeMessagesFromConsumersAndPass(int numJobs){
 		while(scheduledExecutor.getQueue().size() < numJobs){
 			try {
@@ -85,7 +87,7 @@ public class SimpleBackgammonEventsProducer <T extends BackgammonEvent> implemen
 			
 			scheduledExecutor.scheduleAtFixedRate(() -> {
 				while(isRunning){
-					try {
+					try {						
 						T backgammonEvent = (T) consumerToProducerQueue.getEventsQueue().take();
 						sendKafkaMessage(backgammonEvent);
 					} catch (InterruptedException e) {
@@ -128,5 +130,13 @@ public class SimpleBackgammonEventsProducer <T extends BackgammonEvent> implemen
 
 	public void setTopic(String topic) {
 		this.topic = topic;
+	}
+
+	public ConsumerToProducerQueue getConsumerToProducerQueue() {
+		return consumerToProducerQueue;
+	}
+
+	public void setConsumerToProducerQueue(ConsumerToProducerQueue consumerToProducerQueue) {
+		this.consumerToProducerQueue = consumerToProducerQueue;
 	}	
 }

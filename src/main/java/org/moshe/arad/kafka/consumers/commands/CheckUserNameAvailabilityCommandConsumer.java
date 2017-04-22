@@ -26,7 +26,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class CheckUserNameAvailabilityCommandConsumer extends SimpleBackgammonCommandsConsumer<CheckUserNameAvailabilityCommand> {
 
-	@Autowired
 	private ConsumerToProducerQueue consumerToProducerQueue;
 	
 	@Autowired
@@ -44,11 +43,20 @@ public class CheckUserNameAvailabilityCommandConsumer extends SimpleBackgammonCo
 		logger.info("Check User Name Availability Command record recieved, " + record.value());
     	logger.info("Checking whether user name occupied...");
     	boolean isAvailable = usersView.isUserNameAvailable(record.value().getUserName());
+    	logger.info("User Name = " + record.value().getUserName() + " , isAvailable = " + isAvailable);
     	UserNameAvailabilityCheckedEvent userNameAvailabilityCheckedEvent = 
     			new UserNameAvailabilityCheckedEvent(record.value().getUuid(), 4,"Users View Service", 1, "User", 3, "UserNameAvailabilityCheckedEvent", new Date(), isAvailable);
     	logger.info("passing user name availability checked event to producer...");
     	consumerToProducerQueue.getEventsQueue().put(userNameAvailabilityCheckedEvent);
     	logger.info("Event passed to producer...");		
+	}
+
+	public ConsumerToProducerQueue getConsumerToProducerQueue() {
+		return consumerToProducerQueue;
+	}
+
+	public void setConsumerToProducerQueue(ConsumerToProducerQueue consumerToProducerQueue) {
+		this.consumerToProducerQueue = consumerToProducerQueue;
 	}	
 }
 

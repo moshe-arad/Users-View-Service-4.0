@@ -1,8 +1,6 @@
 package org.moshe.arad.kafka.consumers.commands;
 
 import java.util.Arrays;
-import java.util.Map;
-import java.util.Properties;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -11,16 +9,12 @@ import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
-import org.moshe.arad.UsersView;
-import org.moshe.arad.entities.BackgammonUser;
-import org.moshe.arad.kafka.KafkaUtils;
 import org.moshe.arad.kafka.commands.Commandable;
 import org.moshe.arad.kafka.consumers.config.SimpleConsumerConfig;
-import org.moshe.arad.kafka.events.BackgammonEvent;
-import org.moshe.arad.kafka.events.NewUserCreatedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 /**
  * 
@@ -30,6 +24,8 @@ import org.springframework.beans.factory.annotation.Autowired;
  * 
  * important to set properties and topic before usage
  */
+@Component
+@Scope("prototype")
 public abstract class SimpleBackgammonCommandsConsumer <T extends Commandable> implements Runnable {
 
 	Logger logger = LoggerFactory.getLogger(SimpleBackgammonCommandsConsumer.class);

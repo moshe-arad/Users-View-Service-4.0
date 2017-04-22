@@ -1,10 +1,13 @@
 package org.moshe.arad.kafka.commands;
 
+import java.util.UUID;
+
 import org.springframework.stereotype.Component;
 
 @Component("CheckUserEmailAvailabilityCommand")
 public class CheckUserEmailAvailabilityCommand implements Commandable {
 
+	private UUID uuid;
 	private String email;
 
 	public CheckUserEmailAvailabilityCommand() {
@@ -13,10 +16,10 @@ public class CheckUserEmailAvailabilityCommand implements Commandable {
 	public CheckUserEmailAvailabilityCommand(String email) {
 		this.email = email;
 	}
-	
+
 	@Override
 	public String toString() {
-		return "CheckUserEmailAvailabilityCommand [email=" + email + "]";
+		return "CheckUserEmailAvailabilityCommand [uuid=" + uuid + ", email=" + email + "]";
 	}
 
 	public String getEmail() {
@@ -26,5 +29,12 @@ public class CheckUserEmailAvailabilityCommand implements Commandable {
 	public void setEmail(String email) {
 		this.email = email;
 	}
-	
+
+	public UUID getUuid() {
+		return uuid;
+	}
+
+	public void setUuid(UUID uuid) {
+		this.uuid = uuid;
+	}
 }
