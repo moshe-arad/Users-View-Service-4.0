@@ -32,6 +32,9 @@ public class CheckUserNameAvailabilityCommandConsumer extends SimpleBackgammonCo
 	@Autowired
 	private UsersView usersView;
 	
+	public CheckUserNameAvailabilityCommandConsumer() {
+	}
+	
 	public CheckUserNameAvailabilityCommandConsumer(SimpleConsumerConfig simpleConsumerConfig, String topic) {
 		super(simpleConsumerConfig, topic);
 	}
@@ -42,7 +45,7 @@ public class CheckUserNameAvailabilityCommandConsumer extends SimpleBackgammonCo
     	logger.info("Checking whether user name occupied...");
     	boolean isAvailable = usersView.isUserNameAvailable(record.value().getUserName());
     	UserNameAvailabilityCheckedEvent userNameAvailabilityCheckedEvent = 
-    			new UserNameAvailabilityCheckedEvent(4,"Users View Service", 1, "User", 3, "UserNameAvailabilityCheckedEvent", new Date(), isAvailable);
+    			new UserNameAvailabilityCheckedEvent(record.value().getUuid(), 4,"Users View Service", 1, "User", 3, "UserNameAvailabilityCheckedEvent", new Date(), isAvailable);
     	logger.info("passing user name availability checked event to producer...");
     	consumerToProducerQueue.getEventsQueue().put(userNameAvailabilityCheckedEvent);
     	logger.info("Event passed to producer...");		

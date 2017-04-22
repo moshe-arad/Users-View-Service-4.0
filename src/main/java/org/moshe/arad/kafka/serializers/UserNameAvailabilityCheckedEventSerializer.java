@@ -25,17 +25,23 @@ public class UserNameAvailabilityCheckedEventSerializer implements Serializer<Us
 
 	@Override
 	public byte[] serialize(String arg0, UserNameAvailabilityCheckedEvent event) {
-		byte[] serializedIsAvailable = new byte[1];	
+		byte[] serializedIsAvailable = new byte[1];
+		long highUuid;
+		long lowUuid;
 		
 		 try {
 			 if (event == null)
 				 return null;
             
 			 serializedIsAvailable[0] = ((byte)(event.isAvailable() ? 1 : 0));	
+			 highUuid = event.getUuid().getMostSignificantBits();
+			 lowUuid = event.getUuid().getLeastSignificantBits();
 			 
-			 ByteBuffer buf = ByteBuffer.allocate(1);
-			 buf.put(serializedIsAvailable);             
-             
+			 ByteBuffer buf = ByteBuffer.allocate(1+8+8);
+			 buf.put(serializedIsAvailable);
+			 buf.putLong(highUuid);
+			 buf.putLong(lowUuid);
+			 
 	         return buf.array();
 	        } catch (Exception e) {
 	            throw new SerializationException("Error when serializing UserNameAvailabilityCheckedEvent to byte[]");

@@ -47,10 +47,12 @@ public class AppInit {
 		
 		newUserCreatedEventConsumer.setTopic(KafkaUtils.NEW_USER_CREATED_EVENT_TOPIC);
 		newUserCreatedEventConsumer.setSimpleConsumerConfig(newUserCreatedEventConfig);
+		newUserCreatedEventConsumer.initConsumer();
 		executor.execute(newUserCreatedEventConsumer);
 		
 		checkUserNameAvailabilityCommandConsumer.setTopic(KafkaUtils.CHECK_USER_NAME_AVAILABILITY_COMMAND_TOPIC);
 		checkUserNameAvailabilityCommandConsumer.setSimpleConsumerConfig(checkUserNameAvailabilityCommandConfig);
+		checkUserNameAvailabilityCommandConsumer.initConsumer();
 		executor.execute(checkUserNameAvailabilityCommandConsumer);
 		
 		userNameAvailabilityCheckedProducer.setTopic(KafkaUtils.USER_NAME_AVAILABILITY_CHECKED_EVENT_TOPIC);

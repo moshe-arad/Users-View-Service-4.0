@@ -11,6 +11,9 @@ public class NewUserCreatedEvent extends BackgammonEvent {
 
 	BackgammonUser backgammonUser;
 
+	public NewUserCreatedEvent() {
+	}
+	
 	public NewUserCreatedEvent(UUID uuid, int serviceId, String serviceName, int entityId, String entityType,
 			int eventId, String eventType, BackgammonUser backgammonUser) {
 		super(uuid, serviceId, serviceName, entityId, entityType, eventId, eventType);

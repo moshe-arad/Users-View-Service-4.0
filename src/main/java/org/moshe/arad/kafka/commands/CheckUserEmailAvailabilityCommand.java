@@ -7,6 +7,9 @@ public class CheckUserEmailAvailabilityCommand implements Commandable {
 
 	private String email;
 
+	public CheckUserEmailAvailabilityCommand() {
+	}
+	
 	public CheckUserEmailAvailabilityCommand(String email) {
 		this.email = email;
 	}

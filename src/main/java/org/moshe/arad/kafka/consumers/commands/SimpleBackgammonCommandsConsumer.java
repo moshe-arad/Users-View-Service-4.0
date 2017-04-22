@@ -41,6 +41,9 @@ public abstract class SimpleBackgammonCommandsConsumer <T extends Commandable> i
 	private String topic;
 	private SimpleConsumerConfig simpleConsumerConfig;
 	
+	public SimpleBackgammonCommandsConsumer() {
+	}
+	
 	public SimpleBackgammonCommandsConsumer(SimpleConsumerConfig simpleConsumerConfig, String topic) {
 		this.simpleConsumerConfig = simpleConsumerConfig;
 		consumer = new KafkaConsumer<String,T>(simpleConsumerConfig.getProperties());
@@ -73,6 +76,10 @@ public abstract class SimpleBackgammonCommandsConsumer <T extends Commandable> i
 		        
 			} , 0, 100, TimeUnit.MILLISECONDS);
 		}
+	}
+	
+	public void initConsumer(){
+		consumer = new KafkaConsumer<String,T>(simpleConsumerConfig.getProperties());
 	}
 	
 	public abstract void consumerOperations(ConsumerRecord<String,T> record);

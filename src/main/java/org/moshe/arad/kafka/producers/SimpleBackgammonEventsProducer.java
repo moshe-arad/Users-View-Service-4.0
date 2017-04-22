@@ -15,6 +15,7 @@ import org.moshe.arad.kafka.producers.config.SimpleProducerConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 /**
  * 
  * @author moshe-arad
@@ -23,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * 
  * important to set topic and properties before usage
  */
+@Component
 public class SimpleBackgammonEventsProducer <T extends BackgammonEvent> implements SimpleProducer, Runnable {
 
 	private final Logger logger = LoggerFactory.getLogger(SimpleBackgammonEventsProducer.class);
@@ -35,6 +37,9 @@ public class SimpleBackgammonEventsProducer <T extends BackgammonEvent> implemen
 	private boolean isRunning = true;
 	private static final int PRODUCERS_NUM = 3;
 	private String topic;
+	
+	public SimpleBackgammonEventsProducer() {
+	}
 	
 	public SimpleBackgammonEventsProducer(SimpleProducerConfig simpleProducerConfig, String topic) {
 		this.simpleProducerConfig = simpleProducerConfig;

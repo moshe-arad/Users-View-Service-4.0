@@ -7,13 +7,18 @@ import org.moshe.arad.kafka.events.NewUserCreatedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
 public class NewUserCreatedEventConsumer extends SimpleBackgammonEventsConsumer<NewUserCreatedEvent> {
 
 	@Autowired
 	private UsersView usersView;
 	
 	Logger logger = LoggerFactory.getLogger(NewUserCreatedEventConsumer.class);
+	
+	public NewUserCreatedEventConsumer() {
+	}
 	
 	public NewUserCreatedEventConsumer(SimpleConsumerConfig simpleConsumerConfig, String topic) {
 		super(simpleConsumerConfig, topic);

@@ -9,7 +9,7 @@ public class CheckUserNameAvailabilityCommandConfig extends SimpleConsumerConfig
 
 	public CheckUserNameAvailabilityCommandConfig() {
 		super();
-		super.getProperties().put("value.serializer", KafkaUtils.CHECK_USER_NAME_AVAILABILITY_COMMAND_DESERIALIZER);
+		super.getProperties().put("value.deserializer", KafkaUtils.CHECK_USER_NAME_AVAILABILITY_COMMAND_DESERIALIZER);
 		super.getProperties().put("group.id", KafkaUtils.CHECK_USER_NAME_AVAILABILITY_GROUP);
 	}
 }

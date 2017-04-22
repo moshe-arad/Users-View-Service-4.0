@@ -15,7 +15,7 @@ public class KafkaUtils {
 	public static final String NEW_USER_JOINED_LOBBY_EVENT_SERIALIZER = "org.moshe.arad.kafka.serializers.NewUserCreatedEventSerializer";
 	public static final String NEW_USER_CREATED_EVENT_GROUP = "NewUserCreatedEventGroup3";
 	public static final String CHECK_USER_EMAIL_AVAILABILITY_COMMAND_DESERIALIZER = "Check-User-Email-Availability-Command";
-	public static final String CHECK_USER_NAME_AVAILABILITY_COMMAND_DESERIALIZER = "Check-User-Name-Availability-Command";
+	public static final String CHECK_USER_NAME_AVAILABILITY_COMMAND_DESERIALIZER = "org.moshe.arad.kafka.deserializers.CheckUserNameAvailabilityCommandDeserializer";
 	public static final String CHECK_USER_EMAIL_AVAILABILITY_COMMAND_TOPIC = "Check-User-Email-Availability-Command";
 	public static final String CHECK_USER_NAME_AVAILABILITY_COMMAND_TOPIC = "Check-User-Name-Availability-Command";
 	public static final String USER_NAME_AVAILABILITY_CHECKED_EVENT_TOPIC = "User-Name-Availability-Checked-Event";
