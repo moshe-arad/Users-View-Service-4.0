@@ -26,14 +26,21 @@ public class NewUserCreatedEventConsumer extends SimpleBackgammonEventsConsumer<
 
 	@Override
 	public void consumerOperations(ConsumerRecord<String,NewUserCreatedEvent> record) {
-		logger.info("New User Created Event record recieved, " + record.value().getBackgammonUser());	             	                		               
-    	NewUserCreatedEvent newUserCreatedEvent = (NewUserCreatedEvent)record.value();
-    	logger.info("Updating user names in redis data store...");
-    	usersView.addUserName(newUserCreatedEvent.getBackgammonUser().getUserName());
-    	logger.info("Update completed...");
-    	logger.info("Updating emailsin redis data store...");
-    	usersView.addEmail(newUserCreatedEvent.getBackgammonUser().getEmail());
-    	logger.info("Update completed...");		
+		try{
+			logger.info("New User Created Event record recieved, " + record.value().getBackgammonUser());	             	                		               
+	    	NewUserCreatedEvent newUserCreatedEvent = (NewUserCreatedEvent)record.value();
+	    	logger.info("Updating user names in redis data store...");
+	    	usersView.addUserName(newUserCreatedEvent.getBackgammonUser().getUserName());
+	    	logger.info("Update completed...");
+	    	logger.info("Updating emailsin redis data store...");
+	    	usersView.addEmail(newUserCreatedEvent.getBackgammonUser().getEmail());
+	    	logger.info("Update completed...");
+		}
+		catch(Exception ex){
+			logger.error("Failed to save data into redis...");
+			logger.error(ex.getMessage());
+			ex.printStackTrace();
+		}
 	}	
 }
 
