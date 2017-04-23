@@ -4,20 +4,17 @@ import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.util.Date;
 import java.util.Map;
+import java.util.UUID;
 
 import org.apache.kafka.common.errors.SerializationException;
 import org.apache.kafka.common.serialization.Deserializer;
 import org.moshe.arad.entities.BackgammonUser;
 import org.moshe.arad.entities.Location;
 import org.moshe.arad.kafka.events.NewUserCreatedEvent;
-import org.springframework.beans.factory.annotation.Autowired;
 
 public class NewUserCreatedEventDeserializer implements Deserializer<NewUserCreatedEvent>{
 
 	private String encoding = "UTF8";
-	
-	@Autowired
-	private NewUserCreatedEvent newUserCreatedEvent;
 	
 	@Override
 	public void close() {
@@ -48,8 +45,9 @@ public class NewUserCreatedEventDeserializer implements Deserializer<NewUserCrea
             String email = deserializeString(buf); 
             String location = deserializeString(buf); 
             Date date = new Date(buf.getLong());
+            UUID uuid = new UUID(buf.getLong(), buf.getLong());
             
-            newUserCreatedEvent.setBackgammonUser(new BackgammonUser(userName, password, firstName, lastName, email, Location.valueOf(location)));
+            NewUserCreatedEvent newUserCreatedEvent = new NewUserCreatedEvent(uuid, 1, "Users Service", 1, "User", 1, "NewUserCreatedEvent", date, new BackgammonUser(userName, password, firstName, lastName, email, Location.valueOf(location)));         
             newUserCreatedEvent.setArrived(date);
             return newUserCreatedEvent;
             	            		                      
