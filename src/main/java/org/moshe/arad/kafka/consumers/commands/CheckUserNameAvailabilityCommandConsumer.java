@@ -45,7 +45,7 @@ public class CheckUserNameAvailabilityCommandConsumer extends SimpleBackgammonCo
     	boolean isAvailable = usersView.isUserNameAvailable(record.value().getUserName());
     	logger.info("User Name = " + record.value().getUserName() + " , isAvailable = " + isAvailable);
     	UserNameAvailabilityCheckedEvent userNameAvailabilityCheckedEvent = 
-    			new UserNameAvailabilityCheckedEvent(record.value().getUuid(), 4,"Users View Service", 1, "User", 3, "UserNameAvailabilityCheckedEvent", new Date(), isAvailable);
+    			new UserNameAvailabilityCheckedEvent(record.value().getUuid(), 4, 3, new Date(), isAvailable);
     	logger.info("passing user name availability checked event to producer...");
     	consumerToProducerQueue.getEventsQueue().put(userNameAvailabilityCheckedEvent);
     	logger.info("Event passed to producer...");		

@@ -33,7 +33,7 @@ public class CheckUserEmailAvailabilityCommandConsumer extends SimpleBackgammonC
     	boolean isAvailable = usersView.isEmailAvailable(record.value().getEmail());
     	logger.info("Email isAvailable = " + isAvailable + ", record = " + record.value());
     	UserEmailAvailabilityCheckedEvent userEmailAvailabilityCheckedEvent = 
-    			new UserEmailAvailabilityCheckedEvent(record.value().getUuid(), 4,"Users View Service", 1, "User", 4, "UserEmailAvailabilityCheckedEvent", new Date(), isAvailable);
+    			new UserEmailAvailabilityCheckedEvent(record.value().getUuid(), 4, 4, new Date(), isAvailable);
     	logger.info("passing email availability checked event to producer...");
     	consumerToProducerQueue.getEventsQueue().put(userEmailAvailabilityCheckedEvent);
     	logger.info("Event passed to producer...");		

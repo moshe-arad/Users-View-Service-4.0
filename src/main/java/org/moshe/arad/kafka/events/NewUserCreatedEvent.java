@@ -14,18 +14,11 @@ public class NewUserCreatedEvent extends BackgammonEvent {
 	public NewUserCreatedEvent() {
 	}
 	
-	public NewUserCreatedEvent(UUID uuid, int serviceId, String serviceName, int entityId, String entityType,
-			int eventId, String eventType, BackgammonUser backgammonUser) {
-		super(uuid, serviceId, serviceName, entityId, entityType, eventId, eventType);
+	public NewUserCreatedEvent(UUID uuid, int serviceId, int eventId, Date arrived, BackgammonUser backgammonUser) {
+		super(uuid, serviceId, eventId, arrived);
 		this.backgammonUser = backgammonUser;
 	}
 
-	public NewUserCreatedEvent(UUID uuid, int serviceId, String serviceName, int entityId, String entityType,
-			int eventId, String eventType, Date arrived, BackgammonUser backgammonUser) {
-		super(uuid, serviceId, serviceName, entityId, entityType, eventId, eventType, arrived);
-		this.backgammonUser = backgammonUser;
-	}
-	
 	@Override
 	public String toString() {
 		return "NewUserCreatedEvent [backgammonUser=" + backgammonUser + "]";
