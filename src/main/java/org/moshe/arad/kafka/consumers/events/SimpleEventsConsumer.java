@@ -1,4 +1,4 @@
-package org.moshe.arad.kafka.consumers.commands;
+package org.moshe.arad.kafka.consumers.events;
 
 import java.util.Arrays;
 import java.util.concurrent.Executors;
@@ -9,12 +9,10 @@ import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
-import org.moshe.arad.kafka.commands.Commandable;
+import org.moshe.arad.kafka.consumers.ISimpleConsumer;
 import org.moshe.arad.kafka.consumers.config.SimpleConsumerConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 
 /**
  * 
@@ -24,26 +22,18 @@ import org.springframework.stereotype.Component;
  * 
  * important to set properties and topic before usage
  */
-@Component
-@Scope("prototype")
-public abstract class SimpleBackgammonCommandsConsumer <T extends Commandable> implements Runnable {
+public abstract class SimpleEventsConsumer implements Runnable, ISimpleConsumer {
 
-	Logger logger = LoggerFactory.getLogger(SimpleBackgammonCommandsConsumer.class);
+	Logger logger = LoggerFactory.getLogger(SimpleEventsConsumer.class);
 	private static final int CONSUMERS_NUM = 3;
 	
-	private Consumer<String, T> consumer;
+	private Consumer<String, String> consumer;
 	private boolean isRunning = true;
 	private ScheduledThreadPoolExecutor scheduledExecutor = (ScheduledThreadPoolExecutor) Executors.newScheduledThreadPool(6);
 	private String topic;
 	private SimpleConsumerConfig simpleConsumerConfig;
 	
-	public SimpleBackgammonCommandsConsumer() {
-	}
-	
-	public SimpleBackgammonCommandsConsumer(SimpleConsumerConfig simpleConsumerConfig, String topic) {
-		this.simpleConsumerConfig = simpleConsumerConfig;
-		consumer = new KafkaConsumer<String,T>(simpleConsumerConfig.getProperties());
-		this.topic = topic;
+	public SimpleEventsConsumer() {
 	}
 
 	private void executeConsumers(int numConsumers){
@@ -53,7 +43,6 @@ public abstract class SimpleBackgammonCommandsConsumer <T extends Commandable> i
 			try {
 				Thread.sleep(1000);
 			} catch (InterruptedException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 			
@@ -63,8 +52,8 @@ public abstract class SimpleBackgammonCommandsConsumer <T extends Commandable> i
 				consumer.subscribe(Arrays.asList(topic));
 	    		
 	    		while (isRunning){
-	                ConsumerRecords<String, T> records = consumer.poll(100);
-	                for (ConsumerRecord<String, T> record : records){
+	                ConsumerRecords<String, String> records = consumer.poll(100);
+	                for (ConsumerRecord<String, String> record : records){
 	                	consumerOperations(record);	                	
 	                }	              	             
 	    		}
@@ -75,10 +64,10 @@ public abstract class SimpleBackgammonCommandsConsumer <T extends Commandable> i
 	}
 	
 	public void initConsumer(){
-		consumer = new KafkaConsumer<String,T>(simpleConsumerConfig.getProperties());
+		consumer = new KafkaConsumer<String,String>(simpleConsumerConfig.getProperties());
 	}
 	
-	public abstract void consumerOperations(ConsumerRecord<String,T> record);
+	public abstract void consumerOperations(ConsumerRecord<String,String> record);
 	
 	@Override
 	public void run() {

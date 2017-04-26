@@ -1,8 +1,6 @@
-package org.moshe.arad.kafka.consumers.events;
+package org.moshe.arad.kafka.consumers.commands;
 
 import java.util.Arrays;
-import java.util.Map;
-import java.util.Properties;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -11,15 +9,13 @@ import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
-import org.moshe.arad.UsersView;
-import org.moshe.arad.entities.BackgammonUser;
-import org.moshe.arad.kafka.KafkaUtils;
+import org.moshe.arad.kafka.commands.ICommand;
+import org.moshe.arad.kafka.consumers.ISimpleConsumer;
 import org.moshe.arad.kafka.consumers.config.SimpleConsumerConfig;
-import org.moshe.arad.kafka.events.BackgammonEvent;
-import org.moshe.arad.kafka.events.NewUserCreatedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 /**
  * 
@@ -29,24 +25,20 @@ import org.springframework.beans.factory.annotation.Autowired;
  * 
  * important to set properties and topic before usage
  */
-public abstract class SimpleBackgammonEventsConsumer <T extends BackgammonEvent> implements Runnable {
+@Component
+@Scope("prototype")
+public abstract class SimpleCommandsConsumer implements Runnable, ISimpleConsumer {
 
-	Logger logger = LoggerFactory.getLogger(SimpleBackgammonEventsConsumer.class);
+	private Logger logger = LoggerFactory.getLogger(SimpleCommandsConsumer.class);
 	private static final int CONSUMERS_NUM = 3;
 	
-	private Consumer<String, T> consumer;
+	private Consumer<String, String> consumer;
 	private boolean isRunning = true;
 	private ScheduledThreadPoolExecutor scheduledExecutor = (ScheduledThreadPoolExecutor) Executors.newScheduledThreadPool(6);
 	private String topic;
 	private SimpleConsumerConfig simpleConsumerConfig;
 	
-	public SimpleBackgammonEventsConsumer() {
-	}
-	
-	public SimpleBackgammonEventsConsumer(SimpleConsumerConfig simpleConsumerConfig, String topic) {
-		this.simpleConsumerConfig = simpleConsumerConfig;
-		consumer = new KafkaConsumer<String,T>(simpleConsumerConfig.getProperties());
-		this.topic = topic;
+	public SimpleCommandsConsumer() {
 	}
 
 	private void executeConsumers(int numConsumers){
@@ -55,8 +47,7 @@ public abstract class SimpleBackgammonEventsConsumer <T extends BackgammonEvent>
 			
 			try {
 				Thread.sleep(1000);
-			} catch (InterruptedException e1) {
-				// TODO Auto-generated catch block
+			} catch (InterruptedException e1) {			
 				e1.printStackTrace();
 			}
 			
@@ -66,8 +57,8 @@ public abstract class SimpleBackgammonEventsConsumer <T extends BackgammonEvent>
 				consumer.subscribe(Arrays.asList(topic));
 	    		
 	    		while (isRunning){
-	                ConsumerRecords<String, T> records = consumer.poll(100);
-	                for (ConsumerRecord<String, T> record : records){
+	                ConsumerRecords<String, String> records = consumer.poll(100);
+	                for (ConsumerRecord<String, String> record : records){
 	                	consumerOperations(record);	                	
 	                }	              	             
 	    		}
@@ -78,10 +69,10 @@ public abstract class SimpleBackgammonEventsConsumer <T extends BackgammonEvent>
 	}
 	
 	public void initConsumer(){
-		consumer = new KafkaConsumer<String,T>(simpleConsumerConfig.getProperties());
+		consumer = new KafkaConsumer<String,String>(simpleConsumerConfig.getProperties());
 	}
 	
-	public abstract void consumerOperations(ConsumerRecord<String,T> record);
+	public abstract void consumerOperations(ConsumerRecord<String,String> record);
 	
 	@Override
 	public void run() {

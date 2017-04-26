@@ -9,7 +9,6 @@ public class CheckUserEmailAvailabilityCommandConfig extends SimpleConsumerConfi
 
 	public CheckUserEmailAvailabilityCommandConfig() {
 		super();
-		super.getProperties().put("value.deserializer", KafkaUtils.CHECK_USER_EMAIL_AVAILABILITY_COMMAND_DESERIALIZER);
 		super.getProperties().put("group.id", KafkaUtils.CHECK_USER_EMAIL_AVAILABILITY_GROUP);
 	}
 }
