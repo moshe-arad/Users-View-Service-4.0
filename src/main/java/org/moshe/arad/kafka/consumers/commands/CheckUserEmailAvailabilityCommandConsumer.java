@@ -37,7 +37,7 @@ public class CheckUserEmailAvailabilityCommandConsumer extends SimpleCommandsCon
     	boolean isAvailable = usersView.isEmailAvailable(checkUserEmailAvailabilityCommand.getEmail());
     	logger.info("Email isAvailable = " + isAvailable + ", record = " + record.value());
     	UserEmailAvailabilityCheckedEvent userEmailAvailabilityCheckedEvent = 
-    			new UserEmailAvailabilityCheckedEvent(checkUserEmailAvailabilityCommand.getUuid(), 4, 4, new Date(), isAvailable);
+    			new UserEmailAvailabilityCheckedEvent(checkUserEmailAvailabilityCommand.getUuid(), 4, 4, new Date(),"UserEmailAvailabilityCheckedEvent", isAvailable);
     	logger.info("passing email availability checked event to producer...");
     	consumerToProducerQueue.getEventsQueue().put(userEmailAvailabilityCheckedEvent);
     	logger.info("Event passed to producer...");		

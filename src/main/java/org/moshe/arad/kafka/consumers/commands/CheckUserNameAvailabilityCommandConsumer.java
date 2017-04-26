@@ -47,7 +47,7 @@ public class CheckUserNameAvailabilityCommandConsumer extends SimpleCommandsCons
     	boolean isAvailable = usersView.isUserNameAvailable(checkUserNameAvailabilityCommand.getUserName());
     	logger.info("User Name = " + checkUserNameAvailabilityCommand.getUserName() + " , isAvailable = " + isAvailable);
     	UserNameAvailabilityCheckedEvent userNameAvailabilityCheckedEvent = 
-    			new UserNameAvailabilityCheckedEvent(checkUserNameAvailabilityCommand.getUuid(), 4, 3, new Date(), isAvailable);
+    			new UserNameAvailabilityCheckedEvent(checkUserNameAvailabilityCommand.getUuid(), 4, 3, new Date(),"UserNameAvailabilityCheckedEvent", isAvailable);
     	logger.info("passing user name availability checked event to producer...");
     	consumerToProducerQueue.getEventsQueue().put(userNameAvailabilityCheckedEvent);
     	logger.info("Event passed to producer...");		

@@ -46,7 +46,7 @@ public class AppInit implements ApplicationContextAware, IAppInitializer {
 	@Autowired
 	private SimpleEventsProducer<UserNameAvailabilityCheckedEvent> userNameAvailabilityCheckedEventProducer;
 	
-	@Resource(name = "UserNameAvailabilityCheckedConfig")
+	@Autowired
 	private SimpleProducerConfig userNameAvailabilityCheckedConfig;
 	
 	@Resource(name = "CheckUserEmailAvailabilityCommandConsumer")
@@ -58,7 +58,7 @@ public class AppInit implements ApplicationContextAware, IAppInitializer {
 	@Autowired
 	private SimpleEventsProducer<UserEmailAvailabilityCheckedEvent> userEmailAvailabilityCheckedEventProducer;
 	
-	@Resource(name = "UserEmailAvailabilityCheckedConfig")
+	@Autowired
 	private SimpleProducerConfig userEmailAvailabilityCheckedConfig;
 	
 	private ExecutorService executor = Executors.newFixedThreadPool(6);
