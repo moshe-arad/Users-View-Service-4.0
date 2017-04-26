@@ -27,7 +27,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @Scope("prototype")
-public abstract class SimpleCommandsConsumer implements Runnable, ISimpleConsumer {
+public abstract class SimpleCommandsConsumer implements Runnable, ISimpleCommandConsumer {
 
 	private Logger logger = LoggerFactory.getLogger(SimpleCommandsConsumer.class);
 	private static final int CONSUMERS_NUM = 3;
