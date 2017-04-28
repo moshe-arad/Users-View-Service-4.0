@@ -31,13 +31,13 @@ import org.springframework.stereotype.Component;
 @Component
 public class AppInit implements ApplicationContextAware, IAppInitializer {	
 	
-	@Autowired
+//	@Autowired
 	private NewUserCreatedEventConsumer newUserCreatedEventConsumer;
 	
 	@Resource(name = "NewUserCreatedEventConfig")
 	private SimpleConsumerConfig newUserCreatedEventConfig;
 	
-	@Autowired
+//	@Autowired
 	private CheckUserNameAvailabilityCommandConsumer checkUserNameAvailabilityCommandConsumer;	
 	
 	@Resource(name = "CheckUserNameAvailabilityCommandConfig")
@@ -49,7 +49,7 @@ public class AppInit implements ApplicationContextAware, IAppInitializer {
 	@Autowired
 	private SimpleProducerConfig userNameAvailabilityCheckedConfig;
 	
-	@Resource(name = "CheckUserEmailAvailabilityCommandConsumer")
+//	@Resource(name = "CheckUserEmailAvailabilityCommandConsumer")
 	private CheckUserEmailAvailabilityCommandConsumer checkUserEmailAvailabilityCommandConsumer;
 	
 	@Resource(name = "CheckUserEmailAvailabilityCommandConfig")
@@ -71,30 +71,41 @@ public class AppInit implements ApplicationContextAware, IAppInitializer {
 	
 	private ConsumerToProducerQueue userEmailconsumerToProducerQueue = null;
 	
+	public static final int NUM_CONSUMERS = 3;
+	
 	@Override
 	public void initKafkaCommandsConsumers() {
 		userNameconsumerToProducerQueue = context.getBean(ConsumerToProducerQueue.class);
-		
-		logger.info("Initializing new user created event consumer...");
-		initSingleConsumer(checkUserNameAvailabilityCommandConsumer, KafkaUtils.CHECK_USER_NAME_AVAILABILITY_COMMAND_TOPIC, checkUserNameAvailabilityCommandConfig, userNameconsumerToProducerQueue);
-		logger.info("Initialize new user created event, completed...");
-		
 		userEmailconsumerToProducerQueue = context.getBean(ConsumerToProducerQueue.class);
 		
-		logger.info("Initializing new user created event consumer...");
-		initSingleConsumer(checkUserEmailAvailabilityCommandConsumer, KafkaUtils.CHECK_USER_EMAIL_AVAILABILITY_COMMAND_TOPIC, checkUserEmailAvailabilityCommandConfig, userEmailconsumerToProducerQueue);
-		logger.info("Initialize new user created event, completed...");
-		
-		executeProducersAndConsumers(Arrays.asList(checkUserNameAvailabilityCommandConsumer, checkUserEmailAvailabilityCommandConsumer));
+		for(int i=0; i<NUM_CONSUMERS; i++){
+			checkUserNameAvailabilityCommandConsumer = context.getBean(CheckUserNameAvailabilityCommandConsumer.class);
+			
+			logger.info("Initializing new user created event consumer...");
+			initSingleConsumer(checkUserNameAvailabilityCommandConsumer, KafkaUtils.CHECK_USER_NAME_AVAILABILITY_COMMAND_TOPIC, checkUserNameAvailabilityCommandConfig, userNameconsumerToProducerQueue);
+			logger.info("Initialize new user created event, completed...");
+			
+			checkUserEmailAvailabilityCommandConsumer = context.getBean(CheckUserEmailAvailabilityCommandConsumer.class);
+			
+			logger.info("Initializing new user created event consumer...");
+			initSingleConsumer(checkUserEmailAvailabilityCommandConsumer, KafkaUtils.CHECK_USER_EMAIL_AVAILABILITY_COMMAND_TOPIC, checkUserEmailAvailabilityCommandConfig, userEmailconsumerToProducerQueue);
+			logger.info("Initialize new user created event, completed...");
+			
+			executeProducersAndConsumers(Arrays.asList(checkUserNameAvailabilityCommandConsumer, checkUserEmailAvailabilityCommandConsumer));
+		}
 	}
 
 	@Override
 	public void initKafkaEventsConsumers() {
-		logger.info("Initializing new user created event consumer...");
-		initSingleConsumer(newUserCreatedEventConsumer, KafkaUtils.NEW_USER_CREATED_EVENT_TOPIC, newUserCreatedEventConfig, null);
-		logger.info("Initialize new user created event, completed...");
-		
-		executeProducersAndConsumers(Arrays.asList(newUserCreatedEventConsumer));		
+		for(int i=0; i<NUM_CONSUMERS; i++){
+			newUserCreatedEventConsumer = context.getBean(NewUserCreatedEventConsumer.class);
+			
+			logger.info("Initializing new user created event consumer...");
+			initSingleConsumer(newUserCreatedEventConsumer, KafkaUtils.NEW_USER_CREATED_EVENT_TOPIC, newUserCreatedEventConfig, null);
+			logger.info("Initialize new user created event, completed...");
+			
+			executeProducersAndConsumers(Arrays.asList(newUserCreatedEventConsumer));
+		}
 	}
 
 	@Override

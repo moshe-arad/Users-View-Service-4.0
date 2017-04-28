@@ -1,33 +1,23 @@
 package org.moshe.arad.kafka.consumers.commands;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Date;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
-import javax.annotation.Resource;
-
-import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.apache.kafka.clients.consumer.ConsumerRecords;
-import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.moshe.arad.kafka.ConsumerToProducerQueue;
-import org.moshe.arad.kafka.KafkaUtils;
-import org.moshe.arad.kafka.commands.CheckUserEmailAvailabilityCommand;
 import org.moshe.arad.kafka.commands.CheckUserNameAvailabilityCommand;
-import org.moshe.arad.kafka.consumers.config.SimpleConsumerConfig;
 import org.moshe.arad.kafka.events.UserNameAvailabilityCheckedEvent;
 import org.moshe.arad.services.UsersView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Component
+@Scope("prototype")
 public class CheckUserNameAvailabilityCommandConsumer extends SimpleCommandsConsumer {
 
 	private ConsumerToProducerQueue consumerToProducerQueue;
