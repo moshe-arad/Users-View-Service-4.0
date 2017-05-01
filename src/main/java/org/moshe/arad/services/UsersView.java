@@ -55,6 +55,68 @@ public class UsersView {
 		this.addBackgammonUser(user, LOBBY);
 	}
 	
+	public boolean isBackgammonUserExistsInCreatedAndLoggedIn(BackgammonUser user){
+		return isBackgammonUserExistsInSet(user, CREATED_AND_LOGGED_IN);
+	}
+	
+	public void removeUserFromCreatedAndLoggedIn(BackgammonUser user){
+		if(isBackgammonUserExistsInCreatedAndLoggedIn(user)){
+			removeUserFrom(user, CREATED_AND_LOGGED_IN);
+		}
+	}
+	
+	public void removeUserFromLoggedIn(BackgammonUser user){
+		if(isBackgammonUserExistsInCreatedAndLoggedIn(user)){
+			removeUserFrom(user, LOGGED_IN);
+		}
+	}
+	
+	public void removeUserFromLobby(BackgammonUser user){
+		if(isBackgammonUserExistsInCreatedAndLoggedIn(user)){
+			removeUserFrom(user, LOBBY);
+		}
+	}
+	
+	public void removeUserFromGame(BackgammonUser user){
+		if(isBackgammonUserExistsInCreatedAndLoggedIn(user)){
+			removeUserFrom(user, GAME);
+		}
+	}
+	
+	public void removeUserFromLoggedOut(BackgammonUser user){
+		if(isBackgammonUserExistsInCreatedAndLoggedIn(user)){
+			removeUserFrom(user, LOGGED_OUT);
+		}
+	}
+	
+	private void removeUserFrom(BackgammonUser user, String key){
+		if(isBackgammonUserExistsInSet(user, key)){
+			ObjectMapper objectMapper = new ObjectMapper();
+			String userJson = "";
+			try {
+				userJson = objectMapper.writeValueAsString(user);
+			} catch (JsonProcessingException e) {
+				logger.error("Failed to save user as json into redis DB...");
+				logger.error(e.getMessage());
+				e.printStackTrace();
+			}
+			redisTemplate.opsForSet().remove(key, userJson);
+		}
+	}
+	
+	private boolean isBackgammonUserExistsInSet(BackgammonUser user, String key){
+		ObjectMapper objectMapper = new ObjectMapper();
+		String userJson = "";
+		try {
+			userJson = objectMapper.writeValueAsString(user);
+		} catch (JsonProcessingException e) {
+			logger.error("Failed to save user as json into redis DB...");
+			logger.error(e.getMessage());
+			e.printStackTrace();
+		}
+		return redisTemplate.opsForSet().isMember(key, userJson);
+	}
+	
 	private void addBackgammonUser(BackgammonUser user, String key){
 		ObjectMapper objectMapper = new ObjectMapper();
 		
