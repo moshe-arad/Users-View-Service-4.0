@@ -34,8 +34,10 @@ public class NewUserCreatedEventConsumer extends SimpleEventsConsumer {
 	    	logger.info("Updating user names in redis data store...");
 	    	usersView.addUserName(newUserCreatedEvent.getBackgammonUser().getUserName());
 	    	logger.info("Update completed...");
-	    	logger.info("Updating emailsin redis data store...");
+	    	logger.info("Updating emails in redis data store...");
 	    	usersView.addEmail(newUserCreatedEvent.getBackgammonUser().getEmail());
+	    	logger.info("Updating created and logged in users set redis data store...");
+	    	usersView.addBackgammonUserToCreatedAndLoggedIn(newUserCreatedEvent.getBackgammonUser());
 	    	logger.info("Update completed...");
 		}
 		catch(Exception ex){
