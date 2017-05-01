@@ -109,6 +109,44 @@ public class UsersView {
 		}
 	}
 	
+	public BackgammonUser getBackgammonUser(BackgammonUser user){
+		if(isBackgammonUserExistsInCreatedAndLoggedIn(user)){
+			return getBackgammonUser(user, CREATED_AND_LOGGED_IN);
+		}
+		else if(isBackgammonUserExistsInGame(user)){
+			return getBackgammonUser(user, GAME);
+		}
+		else if(isBackgammonUserExistsInLobby(user)){
+			return getBackgammonUser(user, LOBBY);
+		}
+		else if(isBackgammonUserExistsInLoggedIn(user)){
+			return getBackgammonUser(user, LOGGED_IN);
+		}
+		else if(isBackgammonUserExistsInLoggedOut(user)){
+			return getBackgammonUser(user, LOGGED_OUT);
+		}
+		else return null;
+	}
+	
+	private BackgammonUser getBackgammonUser(BackgammonUser user, String key){
+		Set<String> users = redisTemplate.opsForSet().members(key);
+		Iterator<String> it = users.iterator();
+		
+		while(it.hasNext()){
+			ObjectMapper objectMapper = new ObjectMapper();
+			BackgammonUser tempUser;
+			try {
+				tempUser = objectMapper.readValue(it.next(), BackgammonUser.class);
+				if(user.getUserName().equals(tempUser.getUserName())) return tempUser;
+			} catch (IOException e) {
+				logger.error("Failed to save user as json into redis DB...");
+				logger.error(e.getMessage());
+				e.printStackTrace();
+			}			
+		}
+		return null;
+	}
+	
 	private void removeUserFrom(BackgammonUser user, String key){
 		if(isBackgammonUserExistsInSet(user, key)){
 			ObjectMapper objectMapper = new ObjectMapper();

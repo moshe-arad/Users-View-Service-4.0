@@ -66,6 +66,7 @@ public class LogInUserCommandConsumer extends SimpleCommandsConsumer {
 			logger.info("User was placed in logged in set...");
 			
 			logInUserAckEvent.setUserFound(true);
+			logInUserAckEvent.setBackgammonUser(usersView.getBackgammonUser(logInUserAckEvent.getBackgammonUser()));
 		}
 		else logInUserAckEvent.setUserFound(false);
 		
