@@ -5,8 +5,8 @@ import java.util.Date;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.moshe.arad.kafka.ConsumerToProducerQueue;
-import org.moshe.arad.kafka.commands.CheckUserNameAvailabilityCommand;
-import org.moshe.arad.kafka.events.UserNameAvailabilityCheckedEvent;
+import org.moshe.arad.kafka.commands.CheckUserNameCommand;
+import org.moshe.arad.kafka.events.UserNameAckEvent;
 import org.moshe.arad.services.UsersView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,26 +18,26 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Component
 @Scope("prototype")
-public class CheckUserNameAvailabilityCommandConsumer extends SimpleCommandsConsumer {
+public class CheckUserNameCommandConsumer extends SimpleCommandsConsumer {
 
 	private ConsumerToProducerQueue consumerToProducerQueue;
-	private Logger logger = LoggerFactory.getLogger(CheckUserNameAvailabilityCommandConsumer.class);
+	private Logger logger = LoggerFactory.getLogger(CheckUserNameCommandConsumer.class);
 	
 	@Autowired
 	private UsersView usersView;
 	
-	public CheckUserNameAvailabilityCommandConsumer() {
+	public CheckUserNameCommandConsumer() {
 	}
 
 	@Override
 	public void consumerOperations(ConsumerRecord<String, String> record) {
-		CheckUserNameAvailabilityCommand checkUserNameAvailabilityCommand = convertJsonBlobIntoEvent(record.value());
+		CheckUserNameCommand checkUserNameAvailabilityCommand = convertJsonBlobIntoEvent(record.value());
 		logger.info("Check User Name Availability Command record recieved, " + record.value());
     	logger.info("Checking whether user name occupied...");
     	boolean isAvailable = usersView.isUserNameAvailable(checkUserNameAvailabilityCommand.getUserName());
     	logger.info("User Name = " + checkUserNameAvailabilityCommand.getUserName() + " , isAvailable = " + isAvailable);
-    	UserNameAvailabilityCheckedEvent userNameAvailabilityCheckedEvent = 
-    			new UserNameAvailabilityCheckedEvent(checkUserNameAvailabilityCommand.getUuid(), 4, 3, new Date(),"UserNameAvailabilityCheckedEvent", isAvailable);
+    	UserNameAckEvent userNameAvailabilityCheckedEvent = 
+    			new UserNameAckEvent(checkUserNameAvailabilityCommand.getUuid(), 4, 3, new Date(),"UserNameAvailabilityCheckedEvent", isAvailable);
     	logger.info("passing user name availability checked event to producer...");
     	consumerToProducerQueue.getEventsQueue().put(userNameAvailabilityCheckedEvent);
     	logger.info("Event passed to producer...");		
@@ -51,10 +51,10 @@ public class CheckUserNameAvailabilityCommandConsumer extends SimpleCommandsCons
 		this.consumerToProducerQueue = consumerToProducerQueue;
 	}
 	
-	private CheckUserNameAvailabilityCommand convertJsonBlobIntoEvent(String JsonBlob){
+	private CheckUserNameCommand convertJsonBlobIntoEvent(String JsonBlob){
 		ObjectMapper objectMapper = new ObjectMapper();
 		try {
-			return objectMapper.readValue(JsonBlob, CheckUserNameAvailabilityCommand.class);
+			return objectMapper.readValue(JsonBlob, CheckUserNameCommand.class);
 		} catch (IOException e) {
 			logger.error("Falied to convert Json blob into Event...");
 			logger.error(e.getMessage());

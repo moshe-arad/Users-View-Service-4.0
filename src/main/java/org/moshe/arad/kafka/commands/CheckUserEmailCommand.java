@@ -5,15 +5,15 @@ import java.util.UUID;
 import org.springframework.stereotype.Component;
 
 @Component("CheckUserEmailAvailabilityCommand")
-public class CheckUserEmailAvailabilityCommand implements ICommand {
+public class CheckUserEmailCommand implements ICommand {
 
 	private UUID uuid;
 	private String email;
 
-	public CheckUserEmailAvailabilityCommand() {
+	public CheckUserEmailCommand() {
 	}
 	
-	public CheckUserEmailAvailabilityCommand(String email) {
+	public CheckUserEmailCommand(String email) {
 		this.email = email;
 	}
 

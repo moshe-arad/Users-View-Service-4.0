@@ -59,6 +59,22 @@ public class UsersView {
 		return isBackgammonUserExistsInSet(user, CREATED_AND_LOGGED_IN);
 	}
 	
+	public boolean isBackgammonUserExistsInLoggedIn(BackgammonUser user){
+		return isBackgammonUserExistsInSet(user, LOGGED_IN);
+	}
+	
+	public boolean isBackgammonUserExistsInLobby(BackgammonUser user){
+		return isBackgammonUserExistsInSet(user, LOBBY);
+	}
+	
+	public boolean isBackgammonUserExistsInGame(BackgammonUser user){
+		return isBackgammonUserExistsInSet(user, GAME);
+	}
+	
+	public boolean isBackgammonUserExistsInLoggedOut(BackgammonUser user){
+		return isBackgammonUserExistsInSet(user, LOGGED_OUT);
+	}
+	
 	public void removeUserFromCreatedAndLoggedIn(BackgammonUser user){
 		if(isBackgammonUserExistsInCreatedAndLoggedIn(user)){
 			removeUserFrom(user, CREATED_AND_LOGGED_IN);

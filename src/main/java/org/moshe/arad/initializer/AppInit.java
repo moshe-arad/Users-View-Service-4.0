@@ -10,14 +10,14 @@ import javax.annotation.Resource;
 import org.moshe.arad.kafka.ConsumerToProducerQueue;
 import org.moshe.arad.kafka.KafkaUtils;
 import org.moshe.arad.kafka.consumers.ISimpleConsumer;
-import org.moshe.arad.kafka.consumers.commands.CheckUserEmailAvailabilityCommandConsumer;
-import org.moshe.arad.kafka.consumers.commands.CheckUserNameAvailabilityCommandConsumer;
+import org.moshe.arad.kafka.consumers.commands.CheckUserEmailCommandConsumer;
+import org.moshe.arad.kafka.consumers.commands.CheckUserNameCommandConsumer;
 import org.moshe.arad.kafka.consumers.config.SimpleConsumerConfig;
 import org.moshe.arad.kafka.consumers.config.events.NewUserJoinedLobbyEventConfig;
 import org.moshe.arad.kafka.consumers.events.NewUserCreatedEventConsumer;
 import org.moshe.arad.kafka.consumers.events.NewUserJoinedLobbyEventConsumer;
-import org.moshe.arad.kafka.events.UserEmailAvailabilityCheckedEvent;
-import org.moshe.arad.kafka.events.UserNameAvailabilityCheckedEvent;
+import org.moshe.arad.kafka.events.UserEmailAckEvent;
+import org.moshe.arad.kafka.events.UserNameAckEvent;
 import org.moshe.arad.kafka.producers.ISimpleProducer;
 import org.moshe.arad.kafka.producers.config.SimpleProducerConfig;
 import org.moshe.arad.kafka.producers.events.SimpleEventsProducer;
@@ -38,24 +38,24 @@ public class AppInit implements ApplicationContextAware, IAppInitializer {
 	@Resource(name = "NewUserCreatedEventConfig")
 	private SimpleConsumerConfig newUserCreatedEventConfig;
 	
-	private CheckUserNameAvailabilityCommandConsumer checkUserNameAvailabilityCommandConsumer;	
+	private CheckUserNameCommandConsumer checkUserNameAvailabilityCommandConsumer;	
 	
 	@Resource(name = "CheckUserNameAvailabilityCommandConfig")
 	private SimpleConsumerConfig checkUserNameAvailabilityCommandConfig;
 	
 	@Autowired
-	private SimpleEventsProducer<UserNameAvailabilityCheckedEvent> userNameAvailabilityCheckedEventProducer;
+	private SimpleEventsProducer<UserNameAckEvent> userNameAvailabilityCheckedEventProducer;
 	
 	@Autowired
 	private SimpleProducerConfig userNameAvailabilityCheckedConfig;
 	
-	private CheckUserEmailAvailabilityCommandConsumer checkUserEmailAvailabilityCommandConsumer;
+	private CheckUserEmailCommandConsumer checkUserEmailAvailabilityCommandConsumer;
 	
 	@Resource(name = "CheckUserEmailAvailabilityCommandConfig")
 	private SimpleConsumerConfig checkUserEmailAvailabilityCommandConfig;
 	
 	@Autowired
-	private SimpleEventsProducer<UserEmailAvailabilityCheckedEvent> userEmailAvailabilityCheckedEventProducer;
+	private SimpleEventsProducer<UserEmailAckEvent> userEmailAvailabilityCheckedEventProducer;
 	
 	@Autowired
 	private SimpleProducerConfig userEmailAvailabilityCheckedConfig;
@@ -83,13 +83,13 @@ public class AppInit implements ApplicationContextAware, IAppInitializer {
 		userEmailconsumerToProducerQueue = context.getBean(ConsumerToProducerQueue.class);
 		
 		for(int i=0; i<NUM_CONSUMERS; i++){
-			checkUserNameAvailabilityCommandConsumer = context.getBean(CheckUserNameAvailabilityCommandConsumer.class);
+			checkUserNameAvailabilityCommandConsumer = context.getBean(CheckUserNameCommandConsumer.class);
 			
 			logger.info("Initializing new user created event consumer...");
 			initSingleConsumer(checkUserNameAvailabilityCommandConsumer, KafkaUtils.CHECK_USER_NAME_AVAILABILITY_COMMAND_TOPIC, checkUserNameAvailabilityCommandConfig, userNameconsumerToProducerQueue);
 			logger.info("Initialize new user created event, completed...");
 			
-			checkUserEmailAvailabilityCommandConsumer = context.getBean(CheckUserEmailAvailabilityCommandConsumer.class);
+			checkUserEmailAvailabilityCommandConsumer = context.getBean(CheckUserEmailCommandConsumer.class);
 			
 			logger.info("Initializing new user created event consumer...");
 			initSingleConsumer(checkUserEmailAvailabilityCommandConsumer, KafkaUtils.CHECK_USER_EMAIL_AVAILABILITY_COMMAND_TOPIC, newUserJoinedLobbyEventConfig, userEmailconsumerToProducerQueue);

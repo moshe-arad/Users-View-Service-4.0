@@ -5,9 +5,9 @@ import org.moshe.arad.kafka.consumers.config.SimpleConsumerConfig;
 import org.springframework.stereotype.Component;
 
 @Component("CheckUserEmailAvailabilityCommandConfig")
-public class CheckUserEmailAvailabilityCommandConfig extends SimpleConsumerConfig{
+public class CheckUserEmailCommandConfig extends SimpleConsumerConfig{
 
-	public CheckUserEmailAvailabilityCommandConfig() {
+	public CheckUserEmailCommandConfig() {
 		super();
 		super.getProperties().put("group.id", KafkaUtils.CHECK_USER_EMAIL_AVAILABILITY_GROUP);
 	}
