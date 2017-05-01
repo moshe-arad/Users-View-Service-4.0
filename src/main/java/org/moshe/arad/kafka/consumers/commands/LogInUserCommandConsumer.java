@@ -1,15 +1,17 @@
 package org.moshe.arad.kafka.consumers.commands;
 
 import java.io.IOException;
+import java.util.Date;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.moshe.arad.kafka.ConsumerToProducerQueue;
-import org.moshe.arad.kafka.commands.CheckUserNameCommand;
 import org.moshe.arad.kafka.commands.LogInUserCommand;
+import org.moshe.arad.kafka.events.LogInUserAckEvent;
 import org.moshe.arad.services.UsersView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -25,11 +27,16 @@ public class LogInUserCommandConsumer extends SimpleCommandsConsumer {
 	@Autowired
 	private UsersView usersView;
 	
+	@Autowired
+	private ApplicationContext context;
+	
 	public LogInUserCommandConsumer() {
 	}
 
 	@Override
 	public void consumerOperations(ConsumerRecord<String, String> record) {
+		LogInUserAckEvent logInUserAckEvent = context.getBean(LogInUserAckEvent.class);
+		
 		LogInUserCommand logInUserCommand = convertJsonBlobIntoEvent(record.value());
 		
 		logger.info("Will check if user exists in one of redis sets...");
@@ -57,7 +64,18 @@ public class LogInUserCommandConsumer extends SimpleCommandsConsumer {
 			logger.info("User removed...");
 			usersView.addBackgammonUserToLoggedIn(logInUserCommand.getUser());
 			logger.info("User was placed in logged in set...");
+			
+			logInUserAckEvent.setUserFound(true);
 		}
+		else logInUserAckEvent.setUserFound(false);
+		
+		logInUserAckEvent.setUuid(logInUserCommand.getUuid());
+		logInUserAckEvent.setArrived(new Date());
+		logInUserAckEvent.setClazz("LogInUserAckEvent");
+		
+		consumerToProducerQueue.getEventsQueue().put(logInUserAckEvent);
+		
+		logger.info("Log In User Ack Event was sent to producer...");
 	}
 	
 	public ConsumerToProducerQueue getConsumerToProducerQueue() {

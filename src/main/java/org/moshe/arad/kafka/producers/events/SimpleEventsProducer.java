@@ -35,6 +35,7 @@ public class SimpleEventsProducer <T extends BackgammonEvent> implements ISimple
 
 	private final Logger logger = LoggerFactory.getLogger(SimpleEventsProducer.class);
 	
+	@Autowired
 	private SimpleProducerConfig simpleProducerConfig;
 	
 	private ConsumerToProducerQueue consumerToProducerQueue;
