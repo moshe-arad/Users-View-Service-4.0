@@ -11,7 +11,7 @@ public class KafkaUtils {
 	public static final String COMMANDS_TO_USERS_SERVICE_TOPIC = "Commands-To-Users-Service";
 	public static final String NEW_USER_CREATED_EVENT_DESERIALIZER = "org.moshe.arad.kafka.deserializers.NewUserCreatedEventDeserializer";
 	public static final String NEW_USER_CREATED_EVENT_TOPIC = "New-User-Created-Event";
-	public static final String NEW_USER_JOINED_LOBBY_EVENT_TOPIC = "New-User-Created-Event";
+	public static final String NEW_USER_JOINED_LOBBY_EVENT_TOPIC = "New-User-Joined-Lobby-Event";
 	public static final String NEW_USER_JOINED_LOBBY_EVENT_SERIALIZER = "org.moshe.arad.kafka.serializers.NewUserCreatedEventSerializer";
 	public static final String NEW_USER_CREATED_EVENT_GROUP = "NewUserCreatedEventGroup3";
 	public static final String CHECK_USER_NAME_AVAILABILITY_COMMAND_DESERIALIZER = "org.moshe.arad.kafka.deserializers.CheckUserNameAvailabilityCommandDeserializer";
@@ -28,5 +28,7 @@ public class KafkaUtils {
 	public static final String LOG_IN_USER_COMMAND_CONFIG_GROUP = "LogInUserCommnadConfigGroup";
 	public static final String LOG_IN_USER_ACK_EVENT_TOPIC = "Log-In-User-Ack-Event";
 	public static final String LOG_IN_USER_COMMAND_TOPIC = "Log-In-User-Command";
+	public static final String EXISTING_USER_JOINED_LOBBY_EVENT_GROUP = "ExistingUserJoinedLobbyEventGroup2";
+	public static final String EXISTING_USER_JOINED_LOBBY_EVENT_TOPIC = "Existing-User-Joined-Lobby-Event";
 	
 }

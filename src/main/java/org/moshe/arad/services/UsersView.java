@@ -2,6 +2,9 @@ package org.moshe.arad.services;
 
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.moshe.arad.entities.BackgammonUser;
@@ -60,23 +63,23 @@ public class UsersView {
 	}
 	
 	public boolean isBackgammonUserExistsInCreatedAndLoggedIn(BackgammonUser user){
-		return isBackgammonUserExistsInSet(user, CREATED_AND_LOGGED_IN);
+		return isBackgammonUserExistsInHash(user, CREATED_AND_LOGGED_IN);
 	}
 	
 	public boolean isBackgammonUserExistsInLoggedIn(BackgammonUser user){
-		return isBackgammonUserExistsInSet(user, LOGGED_IN);
+		return isBackgammonUserExistsInHash(user, LOGGED_IN);
 	}
 	
 	public boolean isBackgammonUserExistsInLobby(BackgammonUser user){
-		return isBackgammonUserExistsInSet(user, LOBBY);
+		return isBackgammonUserExistsInHash(user, LOBBY);
 	}
 	
 	public boolean isBackgammonUserExistsInGame(BackgammonUser user){
-		return isBackgammonUserExistsInSet(user, GAME);
+		return isBackgammonUserExistsInHash(user, GAME);
 	}
 	
 	public boolean isBackgammonUserExistsInLoggedOut(BackgammonUser user){
-		return isBackgammonUserExistsInSet(user, LOGGED_OUT);
+		return isBackgammonUserExistsInHash(user, LOGGED_OUT);
 	}
 	
 	public void removeUserFromCreatedAndLoggedIn(BackgammonUser user){
@@ -129,60 +132,29 @@ public class UsersView {
 	}
 	
 	private BackgammonUser getBackgammonUser(BackgammonUser user, String key){
-		Set<String> users = redisTemplate.opsForSet().members(key);
-		Iterator<String> it = users.iterator();
-		
-		while(it.hasNext()){
-			ObjectMapper objectMapper = new ObjectMapper();
-			BackgammonUser tempUser;
-			try {
-				tempUser = objectMapper.readValue(it.next(), BackgammonUser.class);
-				if(user.getUserName().equals(tempUser.getUserName())) return tempUser;
-			} catch (IOException e) {
-				logger.error("Failed to save user as json into redis DB...");
-				logger.error(e.getMessage());
-				e.printStackTrace();
-			}			
+		String jsonUser = (String) redisTemplate.opsForHash().get(key, user.getUserName());
+		ObjectMapper objectMapper = new ObjectMapper();
+		try {
+			return objectMapper.readValue(jsonUser, BackgammonUser.class);
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 		return null;
 	}
 	
 	private void removeUserFrom(BackgammonUser user, String key){
-		if(isBackgammonUserExistsInSet(user, key)){
-			ObjectMapper objectMapper = new ObjectMapper();
-			
-			Set<String> users = redisTemplate.opsForSet().members(key);
-			Iterator<String> it = users.iterator();
-			while(it.hasNext()){
-				try {
-					BackgammonUser tempUser = objectMapper.readValue(it.next(), BackgammonUser.class);
-					if(tempUser.getUserName().equals(tempUser.getUserName())){
-						redisTemplate.opsForSet().remove(key, objectMapper.writeValueAsString(tempUser));
-						return;
-					}
-				} catch (IOException e) {
-					logger.error("Failed to save user as json into redis DB...");
-					logger.error(e.getMessage());
-					e.printStackTrace();
-				}
-			}			
+		if(isBackgammonUserExistsInHash(user, key)){
+			redisTemplate.opsForHash().delete(key, user.getUserName());			
 		}
 	}
 	
-	private boolean isBackgammonUserExistsInSet(BackgammonUser user, String key){
+	private boolean isBackgammonUserExistsInHash(BackgammonUser user, String key){
 		ObjectMapper objectMapper = new ObjectMapper();
 		
-		Set<String> users = redisTemplate.opsForSet().members(key);
-		Iterator<String> it = users.iterator();
+		Map<Object, Object> users = redisTemplate.opsForHash().entries(key);
+		Iterator<Entry<Object, Object>> it = users.entrySet().iterator();
 		while(it.hasNext()){
-			try {
-				BackgammonUser tempUser = objectMapper.readValue(it.next(), BackgammonUser.class);
-				if(tempUser.getUserName().equals(user.getUserName())) return true;
-			} catch (IOException e) {
-				logger.error("Failed to save user as json into redis DB...");
-				logger.error(e.getMessage());
-				e.printStackTrace();
-			}			
+			if(user.getUserName().equals(it.next().getKey())) return true;		
 		}
 		
 		return false;
@@ -192,7 +164,7 @@ public class UsersView {
 		ObjectMapper objectMapper = new ObjectMapper();
 		
 		try {
-			redisTemplate.opsForSet().add(key, objectMapper.writeValueAsString(user));
+			redisTemplate.opsForHash().put(key, user.getUserName(),objectMapper.writeValueAsString(user));
 		} catch (JsonProcessingException e) {
 			logger.error("Failed to save user as json into redis DB...");
 			logger.error(e.getMessage());

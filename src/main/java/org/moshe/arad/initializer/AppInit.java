@@ -15,14 +15,15 @@ import org.moshe.arad.kafka.consumers.commands.CheckUserNameCommandConsumer;
 import org.moshe.arad.kafka.consumers.commands.LogInUserCommandConsumer;
 import org.moshe.arad.kafka.consumers.config.SimpleConsumerConfig;
 import org.moshe.arad.kafka.consumers.config.commands.LogInUserCommandConfig;
+import org.moshe.arad.kafka.consumers.config.events.ExistingUserJoinedLobbyEventConfig;
 import org.moshe.arad.kafka.consumers.config.events.NewUserJoinedLobbyEventConfig;
+import org.moshe.arad.kafka.consumers.events.ExistingUserJoinedLobbyEventConsumer;
 import org.moshe.arad.kafka.consumers.events.NewUserCreatedEventConsumer;
 import org.moshe.arad.kafka.consumers.events.NewUserJoinedLobbyEventConsumer;
 import org.moshe.arad.kafka.events.LogInUserAckEvent;
 import org.moshe.arad.kafka.events.UserEmailAckEvent;
 import org.moshe.arad.kafka.events.UserNameAckEvent;
 import org.moshe.arad.kafka.producers.ISimpleProducer;
-import org.moshe.arad.kafka.producers.config.SimpleProducerConfig;
 import org.moshe.arad.kafka.producers.events.SimpleEventsProducer;
 import org.moshe.arad.services.UsersView;
 import org.slf4j.Logger;
@@ -69,6 +70,11 @@ public class AppInit implements ApplicationContextAware, IAppInitializer {
 	
 	@Autowired
 	private SimpleEventsProducer<LogInUserAckEvent> logInUserAckEventProducer;
+	
+	private ExistingUserJoinedLobbyEventConsumer existingUserJoinedLobbyEventConsumer;
+	
+	@Autowired
+	private ExistingUserJoinedLobbyEventConfig existingUserJoinedLobbyEventConfig;
 	
 	private ExecutorService executor = Executors.newFixedThreadPool(6);
 	
@@ -119,14 +125,20 @@ public class AppInit implements ApplicationContextAware, IAppInitializer {
 		for(int i=0; i<NUM_CONSUMERS; i++){
 			newUserCreatedEventConsumer = context.getBean(NewUserCreatedEventConsumer.class);
 			newUserJoinedLobbyEventConsumer = context.getBean(NewUserJoinedLobbyEventConsumer.class);
-					
+			existingUserJoinedLobbyEventConsumer = context.getBean(ExistingUserJoinedLobbyEventConsumer.class);
+			
+			
 			logger.info("Initializing new user created event consumer...");
 			initSingleConsumer(newUserCreatedEventConsumer, KafkaUtils.NEW_USER_CREATED_EVENT_TOPIC, newUserCreatedEventConfig, null);
 			
 			initSingleConsumer(newUserJoinedLobbyEventConsumer, KafkaUtils.NEW_USER_JOINED_LOBBY_EVENT_TOPIC, newUserCreatedEventConfig, null);
 			logger.info("Initialize new user created event, completed...");
 			
-			executeProducersAndConsumers(Arrays.asList(newUserCreatedEventConsumer, newUserJoinedLobbyEventConsumer));
+			initSingleConsumer(existingUserJoinedLobbyEventConsumer, KafkaUtils.EXISTING_USER_JOINED_LOBBY_EVENT_TOPIC, existingUserJoinedLobbyEventConfig, null);
+			
+			executeProducersAndConsumers(Arrays.asList(newUserCreatedEventConsumer, 
+					newUserJoinedLobbyEventConsumer,
+					existingUserJoinedLobbyEventConsumer));
 		}
 	}
 
