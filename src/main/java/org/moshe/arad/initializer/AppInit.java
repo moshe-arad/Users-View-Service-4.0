@@ -13,14 +13,17 @@ import org.moshe.arad.kafka.consumers.ISimpleConsumer;
 import org.moshe.arad.kafka.consumers.commands.CheckUserEmailCommandConsumer;
 import org.moshe.arad.kafka.consumers.commands.CheckUserNameCommandConsumer;
 import org.moshe.arad.kafka.consumers.commands.LogInUserCommandConsumer;
+import org.moshe.arad.kafka.consumers.commands.LogOutUserCommandConsumer;
 import org.moshe.arad.kafka.consumers.config.SimpleConsumerConfig;
 import org.moshe.arad.kafka.consumers.config.commands.LogInUserCommandConfig;
+import org.moshe.arad.kafka.consumers.config.commands.LogOutUserCommandConfig;
 import org.moshe.arad.kafka.consumers.config.events.ExistingUserJoinedLobbyEventConfig;
 import org.moshe.arad.kafka.consumers.config.events.NewUserJoinedLobbyEventConfig;
 import org.moshe.arad.kafka.consumers.events.ExistingUserJoinedLobbyEventConsumer;
 import org.moshe.arad.kafka.consumers.events.NewUserCreatedEventConsumer;
 import org.moshe.arad.kafka.consumers.events.NewUserJoinedLobbyEventConsumer;
 import org.moshe.arad.kafka.events.LogInUserAckEvent;
+import org.moshe.arad.kafka.events.LogOutUserAckEvent;
 import org.moshe.arad.kafka.events.UserEmailAckEvent;
 import org.moshe.arad.kafka.events.UserNameAckEvent;
 import org.moshe.arad.kafka.producers.ISimpleProducer;
@@ -76,6 +79,14 @@ public class AppInit implements ApplicationContextAware, IAppInitializer {
 	@Autowired
 	private ExistingUserJoinedLobbyEventConfig existingUserJoinedLobbyEventConfig;
 	
+	private LogOutUserCommandConsumer logOutUserCommandConsumer;
+	
+	@Autowired
+	private LogOutUserCommandConfig logOutUserCommandConfig;
+	
+	@Autowired
+	private SimpleEventsProducer<LogOutUserAckEvent> logOutUserAckEventProducer;
+	
 	private ExecutorService executor = Executors.newFixedThreadPool(6);
 	
 	private Logger logger = LoggerFactory.getLogger(UsersView.class);
@@ -88,6 +99,8 @@ public class AppInit implements ApplicationContextAware, IAppInitializer {
 	
 	private ConsumerToProducerQueue logInUserCommandQueue = null;
 	
+	private ConsumerToProducerQueue logOutUserCommandQueue = null;
+	
 	public static final int NUM_CONSUMERS = 3;
 	
 	@Override
@@ -95,6 +108,7 @@ public class AppInit implements ApplicationContextAware, IAppInitializer {
 		userNameconsumerToProducerQueue = context.getBean(ConsumerToProducerQueue.class);
 		userEmailconsumerToProducerQueue = context.getBean(ConsumerToProducerQueue.class);
 		logInUserCommandQueue = context.getBean(ConsumerToProducerQueue.class);
+		logOutUserCommandQueue = context.getBean(ConsumerToProducerQueue.class);
 		
 		for(int i=0; i<NUM_CONSUMERS; i++){
 			checkUserNameAvailabilityCommandConsumer = context.getBean(CheckUserNameCommandConsumer.class);
@@ -113,10 +127,13 @@ public class AppInit implements ApplicationContextAware, IAppInitializer {
 			logInUserCommandConsumer = context.getBean(LogInUserCommandConsumer.class);
 			initSingleConsumer(logInUserCommandConsumer, KafkaUtils.LOG_IN_USER_COMMAND_TOPIC, logInUserCommandConfig, logInUserCommandQueue);
 		
+			logOutUserCommandConsumer = context.getBean(LogOutUserCommandConsumer.class);
+			initSingleConsumer(logOutUserCommandConsumer, KafkaUtils.LOG_OUT_USER_COMMAND_TOPIC, logOutUserCommandConfig, logOutUserCommandQueue);
 			
 			executeProducersAndConsumers(Arrays.asList(checkUserNameAvailabilityCommandConsumer, 
 					checkUserEmailAvailabilityCommandConsumer,
-					logInUserCommandConsumer));
+					logInUserCommandConsumer,
+					logOutUserCommandConsumer));
 		}
 	}
 
@@ -159,9 +176,12 @@ public class AppInit implements ApplicationContextAware, IAppInitializer {
 		
 		initSingleProducer(logInUserAckEventProducer, KafkaUtils.LOG_IN_USER_ACK_EVENT_TOPIC, logInUserCommandQueue);
 		
+		initSingleProducer(logOutUserAckEventProducer, KafkaUtils.LOG_OUT_USER_ACK_EVENT_TOPIC, logOutUserCommandQueue);
+		
 		executeProducersAndConsumers(Arrays.asList(userNameAvailabilityCheckedEventProducer, 
 				userEmailAvailabilityCheckedEventProducer,
-				logInUserAckEventProducer));		
+				logInUserAckEventProducer,
+				logOutUserAckEventProducer));		
 	}
 
 	@Override

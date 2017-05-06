@@ -62,6 +62,10 @@ public class UsersView {
 		this.addBackgammonUser(user, LOBBY);
 	}
 	
+	public void addBackgammonUserToLoggedOut(BackgammonUser user) {
+		this.addBackgammonUser(user, LOGGED_OUT);
+	}
+	
 	public boolean isBackgammonUserExistsInCreatedAndLoggedIn(BackgammonUser user){
 		return isBackgammonUserExistsInHash(user, CREATED_AND_LOGGED_IN);
 	}
@@ -170,5 +174,5 @@ public class UsersView {
 			logger.error(e.getMessage());
 			e.printStackTrace();
 		}
-	}
+	}	
 }
