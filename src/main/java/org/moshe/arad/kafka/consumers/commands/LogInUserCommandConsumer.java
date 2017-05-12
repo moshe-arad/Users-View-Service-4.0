@@ -41,37 +41,42 @@ public class LogInUserCommandConsumer extends SimpleCommandsConsumer {
 		
 		LogInUserCommand logInUserCommand = convertJsonBlobIntoEvent(record.value());
 		
-		BackgammonUser user = usersView.getBackgammonUser(logInUserCommand.getUser());
-		
 		logger.info("Will check if user exists in one of redis sets...");
 		
-		boolean isUserInCreatedAndLoggedInStatus = usersView.isBackgammonUserExistsInCreatedAndLoggedIn(user);
-		boolean isUserInGameStatus =  usersView.isBackgammonUserExistsInGame(user);
-		boolean isUserInLobbyStatus = usersView.isBackgammonUserExistsInLobby(user);
-		boolean isUserLoggedInStatus = usersView.isBackgammonUserExistsInLoggedIn(user);
-		boolean isUserInLoggedOutStatus =  usersView.isBackgammonUserExistsInLoggedOut(user);
+		BackgammonUser user = usersView.getBackgammonUser(logInUserCommand.getUser());
 		
-		if(isUserInCreatedAndLoggedInStatus || 
-				isUserInGameStatus ||
-				isUserInLobbyStatus ||
-				isUserInLoggedOutStatus ||
-				isUserLoggedInStatus){
+		if(user != null && user.getPassword().equals(logInUserCommand.getUser().getPassword())){
 			logger.info("User found...");
 			logger.info("Will place user in logged in set...");
 			
-			if(isUserInCreatedAndLoggedInStatus) usersView.removeUserFromCreatedAndLoggedIn(user);
-			if(isUserInGameStatus) usersView.removeUserFromGame(user);
-			if(isUserInLobbyStatus) usersView.removeUserFromLobby(user);
-			if(isUserInLoggedOutStatus) usersView.removeUserFromLoggedOut(user);
-			if(isUserLoggedInStatus) usersView.removeUserFromCreatedAndLoggedIn(user);			
+			boolean isUserInCreatedAndLoggedInStatus = usersView.isBackgammonUserExistsInCreatedAndLoggedIn(user);
+			boolean isUserInGameStatus =  usersView.isBackgammonUserExistsInGame(user);
+			boolean isUserInLobbyStatus = usersView.isBackgammonUserExistsInLobby(user);
+			boolean isUserLoggedInStatus = usersView.isBackgammonUserExistsInLoggedIn(user);
+			boolean isUserInLoggedOutStatus =  usersView.isBackgammonUserExistsInLoggedOut(user);
 			
-			logger.info("User removed...");
-			user.setStatus(Status.LoggedIn);
-			usersView.addBackgammonUserToLoggedIn(user);
-			logger.info("User was placed in logged in set...");			
-			
-			logInUserAckEvent.setUserFound(true);
-			logInUserAckEvent.setBackgammonUser(usersView.getBackgammonUser(user));
+			if(isUserInCreatedAndLoggedInStatus || 
+					isUserInGameStatus ||
+					isUserInLobbyStatus ||
+					isUserInLoggedOutStatus ||
+					isUserLoggedInStatus){
+				
+				
+				if(isUserInCreatedAndLoggedInStatus) usersView.removeUserFromCreatedAndLoggedIn(user);
+				if(isUserInGameStatus) usersView.removeUserFromGame(user);
+				if(isUserInLobbyStatus) usersView.removeUserFromLobby(user);
+				if(isUserInLoggedOutStatus) usersView.removeUserFromLoggedOut(user);
+				if(isUserLoggedInStatus) usersView.removeUserFromCreatedAndLoggedIn(user);			
+				
+				logger.info("User removed...");
+				user.setStatus(Status.LoggedIn);
+				usersView.addBackgammonUserToLoggedIn(user);
+				logger.info("User was placed in logged in set...");			
+				
+				logInUserAckEvent.setUserFound(true);
+				logInUserAckEvent.setBackgammonUser(usersView.getBackgammonUser(user));
+			}
+			else logInUserAckEvent.setUserFound(false);
 		}
 		else logInUserAckEvent.setUserFound(false);
 		

@@ -77,7 +77,7 @@ public class LogOutUserCommandConsumer extends SimpleCommandsConsumer {
 		}
 		else logOutUserAckEvent.setUserFound(false);
 		
-		logOutUserAckEvent.setUuid(logOutUserAckEvent.getUuid());
+		logOutUserAckEvent.setUuid(logOutUserCommand.getUuid());
 		logOutUserAckEvent.setArrived(new Date());
 		logOutUserAckEvent.setClazz("LogOutUserAckEvent");
 		
