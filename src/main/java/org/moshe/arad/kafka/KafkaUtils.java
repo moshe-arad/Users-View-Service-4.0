@@ -33,5 +33,6 @@ public class KafkaUtils {
 	public static final String LOG_OUT_USER_COMMAND_TOPIC = "Log-Out-User-Command";
 	public static final String LOG_OUT_USER_COMMAND_CONFIG_GROUP = "LogOutUserCommandGroup";
 	public static final String LOG_OUT_USER_ACK_EVENT_TOPIC = "Log-Out-User-Ack-Event";
+	public static final String NEW_USER_CREATED_EVENT_ACK_TOPIC = "New-User-Created-Event-Ack";
 	
 }

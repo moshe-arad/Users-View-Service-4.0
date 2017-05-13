@@ -31,18 +31,18 @@ public class NewUserJoinedLobbyEventConsumer extends SimpleEventsConsumer {
 	public void consumerOperations(ConsumerRecord<String, String> record) {
 		NewUserJoinedLobbyEvent newUserJoinedLobbyEvent = convertJsonBlobIntoEvent(record.value());
 		
-		int counter = 0;
-		
-		while(!usersView.isBackgammonUserExistsInCreatedAndLoggedIn(newUserJoinedLobbyEvent.getBackgammonUser())){
-			try {
-				Thread.sleep(50);
-			} catch (InterruptedException e) {			
-				e.printStackTrace();
-			}
-			
-			counter++;
-			if(counter == 40) break;
-		}
+//		int counter = 0;
+//		
+//		while(!usersView.isBackgammonUserExistsInCreatedAndLoggedIn(newUserJoinedLobbyEvent.getBackgammonUser())){
+//			try {
+//				Thread.sleep(50);
+//			} catch (InterruptedException e) {			
+//				e.printStackTrace();
+//			}
+//			
+//			counter++;
+//			if(counter == 40) break;
+//		}
 		
 		logger.info("Will try to remove user from any set that is not Lobby...");
 		usersView.removeUserFromCreatedAndLoggedIn(newUserJoinedLobbyEvent.getBackgammonUser());

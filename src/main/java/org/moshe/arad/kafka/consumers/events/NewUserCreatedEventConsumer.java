@@ -5,10 +5,12 @@ import java.io.IOException;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.moshe.arad.kafka.ConsumerToProducerQueue;
 import org.moshe.arad.kafka.events.NewUserCreatedEvent;
+import org.moshe.arad.kafka.events.NewUserCreatedEventAck;
 import org.moshe.arad.services.UsersView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -22,6 +24,11 @@ public class NewUserCreatedEventConsumer extends SimpleEventsConsumer {
 	private UsersView usersView;
 	
 	Logger logger = LoggerFactory.getLogger(NewUserCreatedEventConsumer.class);
+	
+	private ConsumerToProducerQueue consumerToProducerQueue;
+	
+	@Autowired
+	private ApplicationContext context;
 	
 	public NewUserCreatedEventConsumer() {
 	}
@@ -38,6 +45,15 @@ public class NewUserCreatedEventConsumer extends SimpleEventsConsumer {
 	    	usersView.addEmail(newUserCreatedEvent.getBackgammonUser().getEmail());
 	    	logger.info("Updating created and logged in users set redis data store...");
 	    	usersView.addBackgammonUserToCreatedAndLoggedIn(newUserCreatedEvent.getBackgammonUser());
+	    	
+	    	logger.info("Passing ack to next service (lobby service)...");
+	    	NewUserCreatedEventAck newUserCreatedEventAck = context.getBean(NewUserCreatedEventAck.class);
+	    	newUserCreatedEventAck.setUuid(newUserCreatedEvent.getUuid());
+	    	newUserCreatedEventAck.setArrived(newUserCreatedEvent.getArrived());
+	    	newUserCreatedEvent.setClazz("newUserCreatedEventAck");
+	    	newUserCreatedEventAck.setBackgammonUser(newUserCreatedEvent.getBackgammonUser());
+	    	
+	    	consumerToProducerQueue.getEventsQueue().put(newUserCreatedEventAck);
 	    	logger.info("Update completed...");
 		}
 		catch(Exception ex){
@@ -61,8 +77,7 @@ public class NewUserCreatedEventConsumer extends SimpleEventsConsumer {
 
 	@Override
 	public void setConsumerToProducerQueue(ConsumerToProducerQueue consumerToProducerQueue) {
-		// TODO Auto-generated method stub
-		
+		this.consumerToProducerQueue = consumerToProducerQueue;
 	}
 }
 
