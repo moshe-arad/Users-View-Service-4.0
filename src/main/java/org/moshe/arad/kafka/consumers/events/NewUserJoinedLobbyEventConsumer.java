@@ -3,6 +3,8 @@ package org.moshe.arad.kafka.consumers.events;
 import java.io.IOException;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.moshe.arad.entities.BackgammonUser;
+import org.moshe.arad.entities.Status;
 import org.moshe.arad.kafka.ConsumerToProducerQueue;
 import org.moshe.arad.kafka.events.NewUserCreatedEvent;
 import org.moshe.arad.kafka.events.NewUserJoinedLobbyEvent;
@@ -31,28 +33,11 @@ public class NewUserJoinedLobbyEventConsumer extends SimpleEventsConsumer {
 	public void consumerOperations(ConsumerRecord<String, String> record) {
 		NewUserJoinedLobbyEvent newUserJoinedLobbyEvent = convertJsonBlobIntoEvent(record.value());
 		
-//		int counter = 0;
-//		
-//		while(!usersView.isBackgammonUserExistsInCreatedAndLoggedIn(newUserJoinedLobbyEvent.getBackgammonUser())){
-//			try {
-//				Thread.sleep(50);
-//			} catch (InterruptedException e) {			
-//				e.printStackTrace();
-//			}
-//			
-//			counter++;
-//			if(counter == 40) break;
-//		}
-		
-		logger.info("Will try to remove user from any set that is not Lobby...");
-		usersView.removeUserFromCreatedAndLoggedIn(newUserJoinedLobbyEvent.getBackgammonUser());
-		usersView.removeUserFromLoggedIn(newUserJoinedLobbyEvent.getBackgammonUser());
-		usersView.removeUserFromGame(newUserJoinedLobbyEvent.getBackgammonUser());
-		usersView.removeUserFromLoggedOut(newUserJoinedLobbyEvent.getBackgammonUser());
-		logger.info("Done...");
-		
 		logger.info("Will try to add user to Lobby set...");
-		usersView.addBackgammonUserToInLobby(newUserJoinedLobbyEvent.getBackgammonUser());
+		BackgammonUser user = newUserJoinedLobbyEvent.getBackgammonUser();
+    	if(!user.getStatus().equals(Status.InLobby)) user.setStatus(Status.InLobby);
+    	usersView.addBackgammonUser(user);
+    	logger.info("Update completed...");
 		logger.info("Done...");
 	}
 	

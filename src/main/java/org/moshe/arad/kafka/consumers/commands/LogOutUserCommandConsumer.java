@@ -43,40 +43,13 @@ public class LogOutUserCommandConsumer extends SimpleCommandsConsumer {
 		
 		LogOutUserCommand logOutUserCommand = convertJsonBlobIntoEvent(record.value());
 		
-		BackgammonUser user = usersView.getBackgammonUser(logOutUserCommand.getBackgammonUser());
-		
-		logger.info("Will check if user exists in one of redis hashes...");
-		
-		boolean isUserInCreatedAndLoggedInStatus = usersView.isBackgammonUserExistsInCreatedAndLoggedIn(user);
-		boolean isUserInGameStatus =  usersView.isBackgammonUserExistsInGame(user);
-		boolean isUserInLobbyStatus = usersView.isBackgammonUserExistsInLobby(user);
-		boolean isUserLoggedInStatus = usersView.isBackgammonUserExistsInLoggedIn(user);
-		boolean isUserInLoggedOutStatus =  usersView.isBackgammonUserExistsInLoggedOut(user);
-		
-		if(isUserInCreatedAndLoggedInStatus || 
-				isUserInGameStatus ||
-				isUserInLobbyStatus ||
-				isUserInLoggedOutStatus ||
-				isUserLoggedInStatus){
-			logger.info("User found...");
-			logger.info("Will place user in logged out hash...");
-			
-			if(isUserInCreatedAndLoggedInStatus) usersView.removeUserFromCreatedAndLoggedIn(user);
-			if(isUserInGameStatus) usersView.removeUserFromGame(user);
-			if(isUserInLobbyStatus) usersView.removeUserFromLobby(user);
-			if(isUserInLoggedOutStatus) usersView.removeUserFromLoggedOut(user);
-			if(isUserLoggedInStatus) usersView.removeUserFromCreatedAndLoggedIn(user);			
-			
-			logger.info("User removed...");
-			user.setStatus(Status.LoggedOut);
-			usersView.addBackgammonUserToLoggedOut(user);
-			logger.info("User was placed in logged out hash...");			
-			
-			logOutUserAckEvent.setUserFound(true);
-			logOutUserAckEvent.setBackgammonUser(usersView.getBackgammonUser(user));
-		}
-		else logOutUserAckEvent.setUserFound(false);
-		
+		BackgammonUser user = logOutUserCommand.getBackgammonUser();
+    	if(!user.getStatus().equals(Status.LoggedOut)) user.setStatus(Status.LoggedOut);
+    	usersView.addBackgammonUser(user);
+    	logger.info("Update completed...");
+   
+		logOutUserAckEvent.setBackgammonUser(user);
+		logOutUserAckEvent.setUserFound(true);
 		logOutUserAckEvent.setUuid(logOutUserCommand.getUuid());
 		logOutUserAckEvent.setArrived(new Date());
 		logOutUserAckEvent.setClazz("LogOutUserAckEvent");

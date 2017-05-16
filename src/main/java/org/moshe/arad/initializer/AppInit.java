@@ -12,18 +12,20 @@ import org.moshe.arad.kafka.KafkaUtils;
 import org.moshe.arad.kafka.consumers.ISimpleConsumer;
 import org.moshe.arad.kafka.consumers.commands.CheckUserEmailCommandConsumer;
 import org.moshe.arad.kafka.consumers.commands.CheckUserNameCommandConsumer;
-import org.moshe.arad.kafka.consumers.commands.LogInUserCommandConsumer;
 import org.moshe.arad.kafka.consumers.commands.LogOutUserCommandConsumer;
 import org.moshe.arad.kafka.consumers.config.SimpleConsumerConfig;
 import org.moshe.arad.kafka.consumers.config.commands.LogInUserCommandConfig;
 import org.moshe.arad.kafka.consumers.config.commands.LogOutUserCommandConfig;
 import org.moshe.arad.kafka.consumers.config.events.ExistingUserJoinedLobbyEventConfig;
+import org.moshe.arad.kafka.consumers.config.events.LoggedInEventConfig;
 import org.moshe.arad.kafka.consumers.config.events.NewUserJoinedLobbyEventConfig;
 import org.moshe.arad.kafka.consumers.events.ExistingUserJoinedLobbyEventConsumer;
+import org.moshe.arad.kafka.consumers.events.LoggedInEventConsumer;
 import org.moshe.arad.kafka.consumers.events.NewUserCreatedEventConsumer;
 import org.moshe.arad.kafka.consumers.events.NewUserJoinedLobbyEventConsumer;
 import org.moshe.arad.kafka.events.LogInUserAckEvent;
 import org.moshe.arad.kafka.events.LogOutUserAckEvent;
+import org.moshe.arad.kafka.events.LoggedInEventAck;
 import org.moshe.arad.kafka.events.NewUserCreatedEventAck;
 import org.moshe.arad.kafka.events.UserEmailAckEvent;
 import org.moshe.arad.kafka.events.UserNameAckEvent;
@@ -67,7 +69,7 @@ public class AppInit implements ApplicationContextAware, IAppInitializer {
 	@Autowired
 	private NewUserJoinedLobbyEventConfig newUserJoinedLobbyEventConfig;
 	
-	private LogInUserCommandConsumer logInUserCommandConsumer;
+//	private LogInUserCommandConsumer logInUserCommandConsumer;
 	
 	@Autowired
 	private LogInUserCommandConfig logInUserCommandConfig;
@@ -91,6 +93,14 @@ public class AppInit implements ApplicationContextAware, IAppInitializer {
 	@Autowired
 	private SimpleEventsProducer<NewUserCreatedEventAck> newUserCreatedEventAckProducer;
 	
+	private LoggedInEventConsumer loggedInEventConsumer;
+	
+	@Autowired
+	private LoggedInEventConfig loggedInEventConfig;
+	
+	@Autowired
+	private SimpleEventsProducer<LoggedInEventAck> loggedInEventAckProducer;
+	
 	private ExecutorService executor = Executors.newFixedThreadPool(6);
 	
 	private Logger logger = LoggerFactory.getLogger(UsersView.class);
@@ -106,6 +116,8 @@ public class AppInit implements ApplicationContextAware, IAppInitializer {
 	private ConsumerToProducerQueue logOutUserCommandQueue = null;
 	
 	private ConsumerToProducerQueue newUserCreatedEventAckQueue = null;
+	
+	private ConsumerToProducerQueue loggedInEventQueue = null;
 	
 	public static final int NUM_CONSUMERS = 5;
 	
@@ -130,15 +142,15 @@ public class AppInit implements ApplicationContextAware, IAppInitializer {
 			logger.info("Initialize new user created event, completed...");
 			
 			
-			logInUserCommandConsumer = context.getBean(LogInUserCommandConsumer.class);
-			initSingleConsumer(logInUserCommandConsumer, KafkaUtils.LOG_IN_USER_COMMAND_TOPIC, logInUserCommandConfig, logInUserCommandQueue);
+//			logInUserCommandConsumer = context.getBean(LogInUserCommandConsumer.class);
+//			initSingleConsumer(logInUserCommandConsumer, KafkaUtils.LOG_IN_USER_COMMAND_TOPIC, logInUserCommandConfig, logInUserCommandQueue);
 		
 			logOutUserCommandConsumer = context.getBean(LogOutUserCommandConsumer.class);
 			initSingleConsumer(logOutUserCommandConsumer, KafkaUtils.LOG_OUT_USER_COMMAND_TOPIC, logOutUserCommandConfig, logOutUserCommandQueue);
 			
 			executeProducersAndConsumers(Arrays.asList(checkUserNameAvailabilityCommandConsumer, 
 					checkUserEmailAvailabilityCommandConsumer,
-					logInUserCommandConsumer,
+//					logInUserCommandConsumer,
 					logOutUserCommandConsumer));
 		}
 	}
@@ -146,11 +158,13 @@ public class AppInit implements ApplicationContextAware, IAppInitializer {
 	@Override
 	public void initKafkaEventsConsumers() {
 		newUserCreatedEventAckQueue = context.getBean(ConsumerToProducerQueue.class);
+		loggedInEventQueue = context.getBean(ConsumerToProducerQueue.class);
 		
 		for(int i=0; i<NUM_CONSUMERS; i++){
 			newUserCreatedEventConsumer = context.getBean(NewUserCreatedEventConsumer.class);
 			newUserJoinedLobbyEventConsumer = context.getBean(NewUserJoinedLobbyEventConsumer.class);
 			existingUserJoinedLobbyEventConsumer = context.getBean(ExistingUserJoinedLobbyEventConsumer.class);			
+			loggedInEventConsumer = context.getBean(LoggedInEventConsumer.class);
 			
 			logger.info("Initializing new user created event consumer...");
 			initSingleConsumer(newUserCreatedEventConsumer, KafkaUtils.NEW_USER_CREATED_EVENT_TOPIC, newUserCreatedEventConfig, newUserCreatedEventAckQueue);
@@ -160,9 +174,12 @@ public class AppInit implements ApplicationContextAware, IAppInitializer {
 			
 			initSingleConsumer(existingUserJoinedLobbyEventConsumer, KafkaUtils.EXISTING_USER_JOINED_LOBBY_EVENT_TOPIC, existingUserJoinedLobbyEventConfig, null);
 			
+			initSingleConsumer(loggedInEventConsumer, KafkaUtils.LOGGED_IN_EVENT_TOPIC, loggedInEventConfig, loggedInEventQueue);
+			
 			executeProducersAndConsumers(Arrays.asList(newUserCreatedEventConsumer, 
 					newUserJoinedLobbyEventConsumer,
-					existingUserJoinedLobbyEventConsumer));
+					existingUserJoinedLobbyEventConsumer,
+					loggedInEventConsumer));
 		}
 	}
 
@@ -186,11 +203,14 @@ public class AppInit implements ApplicationContextAware, IAppInitializer {
 		initSingleProducer(logOutUserAckEventProducer, KafkaUtils.LOG_OUT_USER_ACK_EVENT_TOPIC, logOutUserCommandQueue);
 		
 		initSingleProducer(newUserCreatedEventAckProducer, KafkaUtils.NEW_USER_CREATED_EVENT_ACK_TOPIC, newUserCreatedEventAckQueue);
+				
+		initSingleProducer(loggedInEventAckProducer, KafkaUtils.LOGGED_IN_EVENT_ACK_TOPIC, loggedInEventQueue);
 		executeProducersAndConsumers(Arrays.asList(userNameAvailabilityCheckedEventProducer, 
 				userEmailAvailabilityCheckedEventProducer,
 				logInUserAckEventProducer,
 				logOutUserAckEventProducer,
-				newUserCreatedEventAckProducer));		
+				newUserCreatedEventAckProducer,
+				loggedInEventAckProducer));		
 	}
 
 	@Override

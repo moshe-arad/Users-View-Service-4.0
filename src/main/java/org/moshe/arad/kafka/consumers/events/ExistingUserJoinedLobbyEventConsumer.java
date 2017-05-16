@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.Date;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.moshe.arad.entities.BackgammonUser;
+import org.moshe.arad.entities.Status;
 import org.moshe.arad.kafka.ConsumerToProducerQueue;
 import org.moshe.arad.kafka.events.ExistingUserJoinedLobbyEvent;
 import org.moshe.arad.kafka.events.NewUserJoinedLobbyEvent;
@@ -31,33 +33,12 @@ public class ExistingUserJoinedLobbyEventConsumer extends SimpleEventsConsumer {
 	@Override
 	public void consumerOperations(ConsumerRecord<String, String> record) {
 		ExistingUserJoinedLobbyEvent existingUserJoinedLobbyEvent = convertJsonBlobIntoEvent(record.value());
-		
 		logger.info("Will check if user exists in one of redis sets...");
-		
-		boolean isUserInCreatedAndLoggedInStatus = usersView.isBackgammonUserExistsInCreatedAndLoggedIn(existingUserJoinedLobbyEvent.getBackgammonUser());
-		boolean isUserInGameStatus =  usersView.isBackgammonUserExistsInGame(existingUserJoinedLobbyEvent.getBackgammonUser());
-		boolean isUserInLobbyStatus = usersView.isBackgammonUserExistsInLobby(existingUserJoinedLobbyEvent.getBackgammonUser());
-		boolean isUserLoggedInStatus = usersView.isBackgammonUserExistsInLoggedIn(existingUserJoinedLobbyEvent.getBackgammonUser());
-		boolean isUserInLoggedOutStatus =  usersView.isBackgammonUserExistsInLoggedOut(existingUserJoinedLobbyEvent.getBackgammonUser());
-		
-		if(isUserInCreatedAndLoggedInStatus || 
-				isUserInGameStatus ||
-				isUserInLobbyStatus ||
-				isUserInLoggedOutStatus ||
-				isUserLoggedInStatus){
-			logger.info("User found...");
-			logger.info("Will place user in logged in set...");
-			
-			if(isUserInCreatedAndLoggedInStatus) usersView.removeUserFromCreatedAndLoggedIn(existingUserJoinedLobbyEvent.getBackgammonUser());
-			if(isUserInGameStatus) usersView.removeUserFromGame(existingUserJoinedLobbyEvent.getBackgammonUser());
-			if(isUserInLobbyStatus) usersView.removeUserFromLobby(existingUserJoinedLobbyEvent.getBackgammonUser());
-			if(isUserInLoggedOutStatus) usersView.removeUserFromLoggedOut(existingUserJoinedLobbyEvent.getBackgammonUser());
-			if(isUserLoggedInStatus) usersView.removeUserFromLoggedIn(existingUserJoinedLobbyEvent.getBackgammonUser());
-			
-			logger.info("User removed...");
-			usersView.addBackgammonUserToInLobby(existingUserJoinedLobbyEvent.getBackgammonUser());
-			logger.info("User was placed in logged in set...");
-		}
+		logger.info("Updating users view in redis data store...");    	
+    	BackgammonUser user = existingUserJoinedLobbyEvent.getBackgammonUser();
+    	if(!user.getStatus().equals(Status.InLobby)) user.setStatus(Status.InLobby);
+    	usersView.addBackgammonUser(user);
+    	logger.info("Update completed...");
 	}
 	
 	private ExistingUserJoinedLobbyEvent convertJsonBlobIntoEvent(String JsonBlob){
