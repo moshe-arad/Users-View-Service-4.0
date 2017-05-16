@@ -148,7 +148,7 @@ public class UsersView {
 	
 	private void removeUserFrom(BackgammonUser user, String key){
 		if(isBackgammonUserExistsInHash(user, key)){
-			redisTemplate.opsForHash().delete(key, user.getUserName());			
+			redisTemplate.opsForHash().delete(key, user.getUserName());
 		}
 	}
 	
