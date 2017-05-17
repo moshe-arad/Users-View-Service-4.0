@@ -12,15 +12,16 @@ import org.moshe.arad.kafka.KafkaUtils;
 import org.moshe.arad.kafka.consumers.ISimpleConsumer;
 import org.moshe.arad.kafka.consumers.commands.CheckUserEmailCommandConsumer;
 import org.moshe.arad.kafka.consumers.commands.CheckUserNameCommandConsumer;
-import org.moshe.arad.kafka.consumers.commands.LogOutUserCommandConsumer;
 import org.moshe.arad.kafka.consumers.config.SimpleConsumerConfig;
 import org.moshe.arad.kafka.consumers.config.commands.LogInUserCommandConfig;
 import org.moshe.arad.kafka.consumers.config.commands.LogOutUserCommandConfig;
 import org.moshe.arad.kafka.consumers.config.events.ExistingUserJoinedLobbyEventConfig;
 import org.moshe.arad.kafka.consumers.config.events.LoggedInEventConfig;
+import org.moshe.arad.kafka.consumers.config.events.LoggedOutEventConfig;
 import org.moshe.arad.kafka.consumers.config.events.NewUserJoinedLobbyEventConfig;
 import org.moshe.arad.kafka.consumers.events.ExistingUserJoinedLobbyEventConsumer;
 import org.moshe.arad.kafka.consumers.events.LoggedInEventConsumer;
+import org.moshe.arad.kafka.consumers.events.LoggedOutEventConsumer;
 import org.moshe.arad.kafka.consumers.events.NewUserCreatedEventConsumer;
 import org.moshe.arad.kafka.consumers.events.NewUserJoinedLobbyEventConsumer;
 import org.moshe.arad.kafka.events.LogInUserAckEvent;
@@ -69,8 +70,6 @@ public class AppInit implements ApplicationContextAware, IAppInitializer {
 	@Autowired
 	private NewUserJoinedLobbyEventConfig newUserJoinedLobbyEventConfig;
 	
-//	private LogInUserCommandConsumer logInUserCommandConsumer;
-	
 	@Autowired
 	private LogInUserCommandConfig logInUserCommandConfig;
 	
@@ -81,8 +80,6 @@ public class AppInit implements ApplicationContextAware, IAppInitializer {
 	
 	@Autowired
 	private ExistingUserJoinedLobbyEventConfig existingUserJoinedLobbyEventConfig;
-	
-	private LogOutUserCommandConsumer logOutUserCommandConsumer;
 	
 	@Autowired
 	private LogOutUserCommandConfig logOutUserCommandConfig;
@@ -100,6 +97,11 @@ public class AppInit implements ApplicationContextAware, IAppInitializer {
 	
 	@Autowired
 	private SimpleEventsProducer<LoggedInEventAck> loggedInEventAckProducer;
+	
+	private LoggedOutEventConsumer loggedOutEventConsumer;
+	
+	@Autowired
+	private LoggedOutEventConfig loggedOutEventConfig;
 	
 	private ExecutorService executor = Executors.newFixedThreadPool(6);
 	
@@ -119,7 +121,7 @@ public class AppInit implements ApplicationContextAware, IAppInitializer {
 	
 	private ConsumerToProducerQueue loggedInEventQueue = null;
 	
-	public static final int NUM_CONSUMERS = 5;
+	public static final int NUM_CONSUMERS = 3;
 	
 	@Override
 	public void initKafkaCommandsConsumers() {
@@ -140,18 +142,14 @@ public class AppInit implements ApplicationContextAware, IAppInitializer {
 			logger.info("Initializing new user created event consumer...");
 			initSingleConsumer(checkUserEmailAvailabilityCommandConsumer, KafkaUtils.CHECK_USER_EMAIL_AVAILABILITY_COMMAND_TOPIC, newUserJoinedLobbyEventConfig, userEmailconsumerToProducerQueue);
 			logger.info("Initialize new user created event, completed...");
-			
-			
-//			logInUserCommandConsumer = context.getBean(LogInUserCommandConsumer.class);
-//			initSingleConsumer(logInUserCommandConsumer, KafkaUtils.LOG_IN_USER_COMMAND_TOPIC, logInUserCommandConfig, logInUserCommandQueue);
 		
-			logOutUserCommandConsumer = context.getBean(LogOutUserCommandConsumer.class);
-			initSingleConsumer(logOutUserCommandConsumer, KafkaUtils.LOG_OUT_USER_COMMAND_TOPIC, logOutUserCommandConfig, logOutUserCommandQueue);
+//			logOutUserCommandConsumer = context.getBean(LogOutUserCommandConsumer.class);
+//			initSingleConsumer(logOutUserCommandConsumer, KafkaUtils.LOG_OUT_USER_COMMAND_TOPIC, logOutUserCommandConfig, logOutUserCommandQueue);
 			
 			executeProducersAndConsumers(Arrays.asList(checkUserNameAvailabilityCommandConsumer, 
-					checkUserEmailAvailabilityCommandConsumer,
-//					logInUserCommandConsumer,
-					logOutUserCommandConsumer));
+					checkUserEmailAvailabilityCommandConsumer
+//					logOutUserCommandConsumer));
+					));
 		}
 	}
 
@@ -165,7 +163,8 @@ public class AppInit implements ApplicationContextAware, IAppInitializer {
 			newUserJoinedLobbyEventConsumer = context.getBean(NewUserJoinedLobbyEventConsumer.class);
 			existingUserJoinedLobbyEventConsumer = context.getBean(ExistingUserJoinedLobbyEventConsumer.class);			
 			loggedInEventConsumer = context.getBean(LoggedInEventConsumer.class);
-			
+			loggedOutEventConsumer = context.getBean(LoggedOutEventConsumer.class);
+					
 			logger.info("Initializing new user created event consumer...");
 			initSingleConsumer(newUserCreatedEventConsumer, KafkaUtils.NEW_USER_CREATED_EVENT_TOPIC, newUserCreatedEventConfig, newUserCreatedEventAckQueue);
 			
@@ -176,10 +175,13 @@ public class AppInit implements ApplicationContextAware, IAppInitializer {
 			
 			initSingleConsumer(loggedInEventConsumer, KafkaUtils.LOGGED_IN_EVENT_TOPIC, loggedInEventConfig, loggedInEventQueue);
 			
+			initSingleConsumer(loggedOutEventConsumer, KafkaUtils.LOGGED_OUT_EVENT_TOPIC, loggedOutEventConfig, null);
+			
 			executeProducersAndConsumers(Arrays.asList(newUserCreatedEventConsumer, 
 					newUserJoinedLobbyEventConsumer,
 					existingUserJoinedLobbyEventConsumer,
-					loggedInEventConsumer));
+					loggedInEventConsumer,
+					loggedOutEventConsumer));
 		}
 	}
 
