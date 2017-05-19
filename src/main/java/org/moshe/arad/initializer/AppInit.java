@@ -143,12 +143,9 @@ public class AppInit implements ApplicationContextAware, IAppInitializer {
 			initSingleConsumer(checkUserEmailAvailabilityCommandConsumer, KafkaUtils.CHECK_USER_EMAIL_AVAILABILITY_COMMAND_TOPIC, newUserJoinedLobbyEventConfig, userEmailconsumerToProducerQueue);
 			logger.info("Initialize new user created event, completed...");
 		
-//			logOutUserCommandConsumer = context.getBean(LogOutUserCommandConsumer.class);
-//			initSingleConsumer(logOutUserCommandConsumer, KafkaUtils.LOG_OUT_USER_COMMAND_TOPIC, logOutUserCommandConfig, logOutUserCommandQueue);
-			
+
 			executeProducersAndConsumers(Arrays.asList(checkUserNameAvailabilityCommandConsumer, 
 					checkUserEmailAvailabilityCommandConsumer
-//					logOutUserCommandConsumer));
 					));
 		}
 	}
