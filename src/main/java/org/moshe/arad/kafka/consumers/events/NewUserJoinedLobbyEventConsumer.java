@@ -6,12 +6,13 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.moshe.arad.entities.BackgammonUser;
 import org.moshe.arad.entities.Status;
 import org.moshe.arad.kafka.ConsumerToProducerQueue;
-import org.moshe.arad.kafka.events.NewUserCreatedEvent;
 import org.moshe.arad.kafka.events.NewUserJoinedLobbyEvent;
 import org.moshe.arad.services.UsersView;
+import org.moshe.arad.services.UsersViewChanges;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -23,6 +24,9 @@ public class NewUserJoinedLobbyEventConsumer extends SimpleEventsConsumer {
 
 	@Autowired
 	private UsersView usersView;
+	
+	@Autowired
+	private ApplicationContext context;
 	
 	Logger logger = LoggerFactory.getLogger(NewUserJoinedLobbyEventConsumer.class);
 	
@@ -37,6 +41,12 @@ public class NewUserJoinedLobbyEventConsumer extends SimpleEventsConsumer {
 		BackgammonUser user = newUserJoinedLobbyEvent.getBackgammonUser();
     	if(!user.getStatus().equals(Status.InLobby)) user.setStatus(Status.InLobby);
     	usersView.addBackgammonUser(user);
+    	
+//    	UsersViewChanges usersViewChanges = context.getBean(UsersViewChanges.class);
+//    	usersViewChanges.getNewUsersAdded().add(user);
+//    	
+//    	usersView.markNeedToUpdateSingleUser(usersViewChanges, user.getUserName());
+    	
     	logger.info("Update completed...");
 		logger.info("Done...");
 	}

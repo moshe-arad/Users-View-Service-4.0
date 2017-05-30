@@ -12,7 +12,9 @@ import org.moshe.arad.kafka.KafkaUtils;
 import org.moshe.arad.kafka.consumers.ISimpleConsumer;
 import org.moshe.arad.kafka.consumers.commands.CheckUserEmailCommandConsumer;
 import org.moshe.arad.kafka.consumers.commands.CheckUserNameCommandConsumer;
+import org.moshe.arad.kafka.consumers.commands.GetUsersUpdateViewCommandConsumer;
 import org.moshe.arad.kafka.consumers.config.SimpleConsumerConfig;
+import org.moshe.arad.kafka.consumers.config.commands.GetUsersUpdateViewCommandConfig;
 import org.moshe.arad.kafka.consumers.config.commands.LogInUserCommandConfig;
 import org.moshe.arad.kafka.consumers.config.commands.LogOutUserCommandConfig;
 import org.moshe.arad.kafka.consumers.config.events.ExistingUserJoinedLobbyEventConfig;
@@ -24,6 +26,7 @@ import org.moshe.arad.kafka.consumers.events.LoggedInEventConsumer;
 import org.moshe.arad.kafka.consumers.events.LoggedOutEventConsumer;
 import org.moshe.arad.kafka.consumers.events.NewUserCreatedEventConsumer;
 import org.moshe.arad.kafka.consumers.events.NewUserJoinedLobbyEventConsumer;
+import org.moshe.arad.kafka.events.GetUsersUpdateViewAckEvent;
 import org.moshe.arad.kafka.events.LogInUserAckEvent;
 import org.moshe.arad.kafka.events.LogOutUserAckEvent;
 import org.moshe.arad.kafka.events.LoggedInEventAck;
@@ -32,7 +35,6 @@ import org.moshe.arad.kafka.events.UserEmailAckEvent;
 import org.moshe.arad.kafka.events.UserNameAckEvent;
 import org.moshe.arad.kafka.producers.ISimpleProducer;
 import org.moshe.arad.kafka.producers.events.SimpleEventsProducer;
-import org.moshe.arad.services.UsersView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
@@ -103,9 +105,17 @@ public class AppInit implements ApplicationContextAware, IAppInitializer {
 	@Autowired
 	private LoggedOutEventConfig loggedOutEventConfig;
 	
+	private GetUsersUpdateViewCommandConsumer getUsersUpdateViewCommandConsumer;
+	
+	@Autowired
+	private GetUsersUpdateViewCommandConfig getUsersUpdateViewCommandConfig;
+	
+	@Autowired
+	private SimpleEventsProducer<GetUsersUpdateViewAckEvent> getUsersUpdateViewAckEventProducer;
+	
 	private ExecutorService executor = Executors.newFixedThreadPool(6);
 	
-	private Logger logger = LoggerFactory.getLogger(UsersView.class);
+	private Logger logger = LoggerFactory.getLogger(AppInit.class);
 	
 	private ApplicationContext context;
 	
@@ -121,6 +131,8 @@ public class AppInit implements ApplicationContextAware, IAppInitializer {
 	
 	private ConsumerToProducerQueue loggedInEventQueue = null;
 	
+	private ConsumerToProducerQueue usersUpdateViewQueue = null;
+	
 	public static final int NUM_CONSUMERS = 3;
 	
 	@Override
@@ -129,7 +141,8 @@ public class AppInit implements ApplicationContextAware, IAppInitializer {
 		userEmailconsumerToProducerQueue = context.getBean(ConsumerToProducerQueue.class);
 		logInUserCommandQueue = context.getBean(ConsumerToProducerQueue.class);
 		logOutUserCommandQueue = context.getBean(ConsumerToProducerQueue.class);
-		
+		usersUpdateViewQueue = context.getBean(ConsumerToProducerQueue.class);
+
 		for(int i=0; i<NUM_CONSUMERS; i++){
 			checkUserNameAvailabilityCommandConsumer = context.getBean(CheckUserNameCommandConsumer.class);
 			
@@ -143,9 +156,12 @@ public class AppInit implements ApplicationContextAware, IAppInitializer {
 			initSingleConsumer(checkUserEmailAvailabilityCommandConsumer, KafkaUtils.CHECK_USER_EMAIL_AVAILABILITY_COMMAND_TOPIC, newUserJoinedLobbyEventConfig, userEmailconsumerToProducerQueue);
 			logger.info("Initialize new user created event, completed...");
 		
-
+			getUsersUpdateViewCommandConsumer = context.getBean(GetUsersUpdateViewCommandConsumer.class);
+			initSingleConsumer(getUsersUpdateViewCommandConsumer, KafkaUtils.GET_USERS_UPDATE_VIEW_COMMAND_TOPIC, getUsersUpdateViewCommandConfig, usersUpdateViewQueue);
+			
 			executeProducersAndConsumers(Arrays.asList(checkUserNameAvailabilityCommandConsumer, 
-					checkUserEmailAvailabilityCommandConsumer
+					checkUserEmailAvailabilityCommandConsumer,
+					getUsersUpdateViewCommandConsumer
 					));
 		}
 	}
@@ -204,12 +220,16 @@ public class AppInit implements ApplicationContextAware, IAppInitializer {
 		initSingleProducer(newUserCreatedEventAckProducer, KafkaUtils.NEW_USER_CREATED_EVENT_ACK_TOPIC, newUserCreatedEventAckQueue);
 				
 		initSingleProducer(loggedInEventAckProducer, KafkaUtils.LOGGED_IN_EVENT_ACK_TOPIC, loggedInEventQueue);
+		
+		initSingleProducer(getUsersUpdateViewAckEventProducer, KafkaUtils.GET_USERS_UPDATE_VIEW_ACK_EVENT_TOPIC, usersUpdateViewQueue);
+		
 		executeProducersAndConsumers(Arrays.asList(userNameAvailabilityCheckedEventProducer, 
 				userEmailAvailabilityCheckedEventProducer,
 				logInUserAckEventProducer,
 				logOutUserAckEventProducer,
 				newUserCreatedEventAckProducer,
-				loggedInEventAckProducer));		
+				loggedInEventAckProducer,
+				getUsersUpdateViewAckEventProducer));		
 	}
 
 	@Override

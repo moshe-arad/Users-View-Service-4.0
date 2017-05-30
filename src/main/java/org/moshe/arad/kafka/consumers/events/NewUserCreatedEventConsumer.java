@@ -7,6 +7,7 @@ import org.moshe.arad.kafka.ConsumerToProducerQueue;
 import org.moshe.arad.kafka.events.NewUserCreatedEvent;
 import org.moshe.arad.kafka.events.NewUserCreatedEventAck;
 import org.moshe.arad.services.UsersView;
+import org.moshe.arad.services.UsersViewChanges;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +46,11 @@ public class NewUserCreatedEventConsumer extends SimpleEventsConsumer {
 	    	usersView.addEmail(newUserCreatedEvent.getBackgammonUser().getEmail());
 	    	logger.info("Updating created and logged in users set redis data store...");
 	    	usersView.addBackgammonUser(newUserCreatedEvent.getBackgammonUser());
+	    	
+	    	UsersViewChanges usersViewChanges = context.getBean(UsersViewChanges.class);
+	    	usersViewChanges.getUsersLoggedIn().add(newUserCreatedEvent.getBackgammonUser());
+	    	
+	    	usersView.markNeedToUpdateSingleUser(usersViewChanges, newUserCreatedEvent.getBackgammonUser().getUserName());
 	    	
 	    	logger.info("Passing ack to next service (lobby service)...");
 	    	NewUserCreatedEventAck newUserCreatedEventAck = context.getBean(NewUserCreatedEventAck.class);

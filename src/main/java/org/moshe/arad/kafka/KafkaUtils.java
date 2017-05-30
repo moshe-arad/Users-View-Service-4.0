@@ -2,7 +2,7 @@ package org.moshe.arad.kafka;
 
 public class KafkaUtils {
 
-	public static final String SERVERS = "192.168.1.4:9092,192.168.1.4:9093,192.168.1.4:9094";
+	public static final String SERVERS = "192.168.1.6:9092,192.168.1.6:9093,192.168.1.6:9094";
 	public static final String CREATE_NEW_USER_COMMAND_GROUP = "CreateNewUserCommandGroup";
 	public static final String STRING_DESERIALIZER = "org.apache.kafka.common.serialization.StringDeserializer";
 	public static final String STRING_SERIALIZER = "org.apache.kafka.common.serialization.StringSerializer";
@@ -39,5 +39,8 @@ public class KafkaUtils {
 	public static final String LOGGED_IN_EVENT_ACK_TOPIC = "Logged-In-Event-Ack";
 	public static final String LOGGED_OUT_EVENT_GROUP = "LoggedOutEventGroup1";
 	public static final String LOGGED_OUT_EVENT_TOPIC = "Logged-Out-Event";
+	public static final String GET_USERS_UPDATE_VIEW_COMMAND_GROUP = "GetUsersUpdateViewCommandGroup";
+	public static final String GET_USERS_UPDATE_VIEW_COMMAND_TOPIC = "Get-Users-Update-View-Command";
+	public static final String GET_USERS_UPDATE_VIEW_ACK_EVENT_TOPIC = "Get-Users-Update-View-Ack-Event";
 	
 }

@@ -8,9 +8,8 @@ import org.moshe.arad.entities.Status;
 import org.moshe.arad.kafka.ConsumerToProducerQueue;
 import org.moshe.arad.kafka.events.LoggedInEvent;
 import org.moshe.arad.kafka.events.LoggedInEventAck;
-import org.moshe.arad.kafka.events.NewUserCreatedEvent;
-import org.moshe.arad.kafka.events.NewUserCreatedEventAck;
 import org.moshe.arad.services.UsersView;
+import org.moshe.arad.services.UsersViewChanges;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +38,7 @@ public class LoggedInEventConsumer extends SimpleEventsConsumer {
 
 	@Override
 	public void consumerOperations(ConsumerRecord<String,String> record) {
-		try{
+		try{	    	
 			LoggedInEvent loggedInEvent = convertJsonBlobIntoEvent(record.value());
 			logger.info("Logged In Event record recieved, " + loggedInEvent.getBackgammonUser());	             	                		               
 	    	logger.info("Updating users view in redis data store...");
@@ -48,6 +47,11 @@ public class LoggedInEventConsumer extends SimpleEventsConsumer {
 	    	if(!user.getStatus().equals(Status.LoggedIn)) user.setStatus(Status.LoggedIn);
 	    	usersView.addBackgammonUser(user);
 	    	logger.info("Update completed...");
+	    	
+	    	UsersViewChanges usersViewChanges = context.getBean(UsersViewChanges.class);
+	    	usersViewChanges.getUsersLoggedIn().add(user);
+	    	
+	    	usersView.markNeedToUpdateSingleUser(usersViewChanges, user.getUserName());
 	    	
 	    	LoggedInEventAck loggedInEventAck = context.getBean(LoggedInEventAck.class);
 	    	loggedInEventAck.setUuid(loggedInEvent.getUuid());

@@ -1,56 +1,59 @@
 package org.moshe.arad.services;
 
-import java.io.IOException;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-
 import org.moshe.arad.entities.BackgammonUser;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 public class UsersView {
+
+	@Autowired
+	private UsersViewUpdate usersViewUpdate;
 	
 	@Autowired
-	private RedisTemplate<String, String> redisTemplate;
+	private UsersViewSimple usersViewSimple;
 	
-	public static final String EMAILS_KEY = "emails";
-	public static final String USER_NAMES_KEY = "userNames";
-	public static final String USERS = "Users";
+	public void markNeedToUpdateAllUsers(UsersViewChanges usersViewChanges){
+		usersViewUpdate.markNeedToUpdateAllUsers(usersViewChanges);
+	}	
 	
-	private Logger logger = LoggerFactory.getLogger(UsersView.class);
+	public  void markNeedToUpdateGroupUsers(UsersViewChanges usersViewChanges, String group){
+		usersViewUpdate.markNeedToUpdateGroupUsers(usersViewChanges, group);		
+	}
+	
+	public  void markNeedToUpdateSingleUser(UsersViewChanges usersViewChanges, String username){
+		usersViewUpdate.markNeedToUpdateSingleUser(usersViewChanges, username);
+	}
+	
+	public UsersViewChanges getNeedToUpdateAllUsers(){
+		return usersViewUpdate.getNeedToUpdateAllUsers();
+	}
+	
+	public UsersViewChanges getNeedToUpdateGroupUsers(String group){
+		return usersViewUpdate.getNeedToUpdateGroupUsers(group);
+	}
+	
+	public UsersViewChanges getNeedToUpdateUser(String username){
+		return usersViewUpdate.getNeedToUpdateUser(username);		
+	}
 	
 	public boolean isEmailAvailable(String email){
-		return !redisTemplate.opsForSet().isMember(EMAILS_KEY, email);
+		return usersViewSimple.isEmailAvailable(email);
 	}
 	
 	public boolean isUserNameAvailable(String userName){
-		return !redisTemplate.opsForSet().isMember(USER_NAMES_KEY, userName);		
+		return usersViewSimple.isUserNameAvailable(userName);
 	}
 	
 	public void addEmail(String email){
-		if(this.isEmailAvailable(email)) redisTemplate.opsForSet().add(EMAILS_KEY, email);		
+		usersViewSimple.addEmail(email);		
 	}
 
 	public void addUserName(String userName){
-		if(this.isUserNameAvailable(userName)) redisTemplate.opsForSet().add(USER_NAMES_KEY, userName);		
+		usersViewSimple.addUserName(userName);		
 	}
 	
 	public void addBackgammonUser(BackgammonUser user){
-		ObjectMapper objectMapper = new ObjectMapper();
-		try {
-			redisTemplate.opsForHash().put(USERS, user.getUserName(), objectMapper.writeValueAsString(user));
-		} catch (JsonProcessingException e) {
-			e.printStackTrace();
-		}
+		usersViewSimple.addBackgammonUser(user);
 	}
 }
