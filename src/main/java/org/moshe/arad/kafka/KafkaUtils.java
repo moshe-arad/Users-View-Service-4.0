@@ -42,5 +42,7 @@ public class KafkaUtils {
 	public static final String GET_USERS_UPDATE_VIEW_COMMAND_GROUP = "GetUsersUpdateViewCommandGroup";
 	public static final String GET_USERS_UPDATE_VIEW_COMMAND_TOPIC = "Get-Users-Update-View-Command";
 	public static final String GET_USERS_UPDATE_VIEW_ACK_EVENT_TOPIC = "Get-Users-Update-View-Ack-Event";
+	public static final String USER_PERMISSIONS_UPDATE_AFTER_CREATE_ROOM_EVENT_GROUP = "UserPermissionsUpdateAfterCreateRoomEventGroup3";
+	public static final String USER_PERMISSIONS_UPDATED_EVENT_TOPIC = "User-Permissions-Updated-Event";
 	
 }

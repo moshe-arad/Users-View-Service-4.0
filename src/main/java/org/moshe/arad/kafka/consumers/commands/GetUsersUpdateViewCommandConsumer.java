@@ -50,18 +50,7 @@ public class GetUsersUpdateViewCommandConsumer extends SimpleCommandsConsumer {
 			
 		}
 		else if(getUsersUpdateViewCommand.isUserLevel()){
-			long startTime = System.nanoTime();
 			usersViewChanges = usersView.getNeedToUpdateUser(getUsersUpdateViewCommand.getUser());
-			long endTime = System.nanoTime();
-
-			long duration = (endTime - startTime);
-			
-			logger.info("**********************************");
-			logger.info("**********************************");
-			logger.info("***** duration = " + duration + "*************");
-			logger.info("**********************************");
-			logger.info("**********************************");
-			
 		}
 		
 		getUsersUpdateViewAckEvent.setUuid(getUsersUpdateViewCommand.getUuid());

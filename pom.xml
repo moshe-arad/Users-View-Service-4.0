@@ -4,8 +4,8 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>org.moshe.arad</groupId>
-	<artifactId>users-view-service-4.0</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<artifactId>users-view</artifactId>
+	<version>4.0</version>
 	<packaging>jar</packaging>
 
 	<name>users-view-service-4.0</name>
