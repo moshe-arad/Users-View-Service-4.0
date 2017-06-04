@@ -19,14 +19,12 @@ import org.moshe.arad.kafka.consumers.config.commands.LogInUserCommandConfig;
 import org.moshe.arad.kafka.consumers.config.commands.LogOutUserCommandConfig;
 import org.moshe.arad.kafka.consumers.config.events.ExistingUserJoinedLobbyEventConfig;
 import org.moshe.arad.kafka.consumers.config.events.LoggedInEventConfig;
-import org.moshe.arad.kafka.consumers.config.events.LoggedOutEventConfig;
 import org.moshe.arad.kafka.consumers.config.events.NewUserJoinedLobbyEventConfig;
 import org.moshe.arad.kafka.consumers.config.events.UserPermissionsUpdateAfterAddSecondPlayerEventConfig;
 import org.moshe.arad.kafka.consumers.config.events.UserPermissionsUpdateAfterAddWatcherEventConfig;
 import org.moshe.arad.kafka.consumers.config.events.UserPermissionsUpdateAfterCreateRoomEventConfig;
 import org.moshe.arad.kafka.consumers.events.ExistingUserJoinedLobbyEventConsumer;
 import org.moshe.arad.kafka.consumers.events.LoggedInEventConsumer;
-import org.moshe.arad.kafka.consumers.events.LoggedOutEventConsumer;
 import org.moshe.arad.kafka.consumers.events.NewUserCreatedEventConsumer;
 import org.moshe.arad.kafka.consumers.events.NewUserJoinedLobbyEventConsumer;
 import org.moshe.arad.kafka.consumers.events.UserPermissionsUpdatedAfterAddSecondPlayerEventConsumer;
@@ -79,18 +77,12 @@ public class AppInit implements ApplicationContextAware, IAppInitializer {
 	private NewUserJoinedLobbyEventConfig newUserJoinedLobbyEventConfig;
 	
 	@Autowired
-	private LogInUserCommandConfig logInUserCommandConfig;
-	
-	@Autowired
 	private SimpleEventsProducer<LogInUserAckEvent> logInUserAckEventProducer;
 	
 	private ExistingUserJoinedLobbyEventConsumer existingUserJoinedLobbyEventConsumer;
 	
 	@Autowired
 	private ExistingUserJoinedLobbyEventConfig existingUserJoinedLobbyEventConfig;
-	
-	@Autowired
-	private LogOutUserCommandConfig logOutUserCommandConfig;
 	
 	@Autowired
 	private SimpleEventsProducer<LogOutUserAckEvent> logOutUserAckEventProducer;
@@ -105,11 +97,6 @@ public class AppInit implements ApplicationContextAware, IAppInitializer {
 	
 	@Autowired
 	private SimpleEventsProducer<LoggedInEventAck> loggedInEventAckProducer;
-	
-	private LoggedOutEventConsumer loggedOutEventConsumer;
-	
-	@Autowired
-	private LoggedOutEventConfig loggedOutEventConfig;
 	
 	private GetUsersUpdateViewCommandConsumer getUsersUpdateViewCommandConsumer;
 	
@@ -197,7 +184,6 @@ public class AppInit implements ApplicationContextAware, IAppInitializer {
 			newUserJoinedLobbyEventConsumer = context.getBean(NewUserJoinedLobbyEventConsumer.class);
 			existingUserJoinedLobbyEventConsumer = context.getBean(ExistingUserJoinedLobbyEventConsumer.class);			
 			loggedInEventConsumer = context.getBean(LoggedInEventConsumer.class);
-			loggedOutEventConsumer = context.getBean(LoggedOutEventConsumer.class);
 			userPermissionsUpdatedAfterCreateRoomEventConsumer = context.getBean(UserPermissionsUpdatedAfterCreateRoomEventConsumer.class);
 			userPermissionsUpdatedAfterAddWatcherEventConsumer = context.getBean(UserPermissionsUpdatedAfterAddWatcherEventConsumer.class);
 			userPermissionsUpdatedAfterAddSecondPlayerEventConsumer = context.getBean(UserPermissionsUpdatedAfterAddSecondPlayerEventConsumer.class);
@@ -212,8 +198,6 @@ public class AppInit implements ApplicationContextAware, IAppInitializer {
 			
 			initSingleConsumer(loggedInEventConsumer, KafkaUtils.LOGGED_IN_EVENT_TOPIC, loggedInEventConfig, loggedInEventQueue);
 			
-			initSingleConsumer(loggedOutEventConsumer, KafkaUtils.LOGGED_OUT_EVENT_TOPIC, loggedOutEventConfig, null);
-			
 			initSingleConsumer(userPermissionsUpdatedAfterCreateRoomEventConsumer, KafkaUtils.USER_PERMISSIONS_UPDATED_EVENT_TOPIC, userPermissionsUpdateAfterCreateRoomEventConfig, null);
 			
 			initSingleConsumer(userPermissionsUpdatedAfterAddWatcherEventConsumer, KafkaUtils.USER_PERMISSIONS_UPDATED_USER_ADDED_WATCHER_EVENT_TOPIC, userPermissionsUpdateAfterAddWatcherEventConfig, null);
@@ -224,7 +208,6 @@ public class AppInit implements ApplicationContextAware, IAppInitializer {
 					newUserJoinedLobbyEventConsumer,
 					existingUserJoinedLobbyEventConsumer,
 					loggedInEventConsumer,
-					loggedOutEventConsumer,
 					userPermissionsUpdatedAfterCreateRoomEventConsumer,
 					userPermissionsUpdatedAfterAddWatcherEventConsumer,
 					userPermissionsUpdatedAfterAddSecondPlayerEventConsumer));
