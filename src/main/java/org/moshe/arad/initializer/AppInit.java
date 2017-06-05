@@ -23,6 +23,7 @@ import org.moshe.arad.kafka.consumers.config.events.NewUserJoinedLobbyEventConfi
 import org.moshe.arad.kafka.consumers.config.events.UserPermissionsUpdateAfterAddSecondPlayerEventConfig;
 import org.moshe.arad.kafka.consumers.config.events.UserPermissionsUpdateAfterAddWatcherEventConfig;
 import org.moshe.arad.kafka.consumers.config.events.UserPermissionsUpdateAfterCreateRoomEventConfig;
+import org.moshe.arad.kafka.consumers.config.events.UserPermissionsUpdateAfterLeftLobbyEventConfig;
 import org.moshe.arad.kafka.consumers.events.ExistingUserJoinedLobbyEventConsumer;
 import org.moshe.arad.kafka.consumers.events.LoggedInEventConsumer;
 import org.moshe.arad.kafka.consumers.events.NewUserCreatedEventConsumer;
@@ -30,6 +31,7 @@ import org.moshe.arad.kafka.consumers.events.NewUserJoinedLobbyEventConsumer;
 import org.moshe.arad.kafka.consumers.events.UserPermissionsUpdatedAfterAddSecondPlayerEventConsumer;
 import org.moshe.arad.kafka.consumers.events.UserPermissionsUpdatedAfterAddWatcherEventConsumer;
 import org.moshe.arad.kafka.consumers.events.UserPermissionsUpdatedAfterCreateRoomEventConsumer;
+import org.moshe.arad.kafka.consumers.events.UserPermissionsUpdatedAfterLeftLobbyEventConsumer;
 import org.moshe.arad.kafka.events.GetUsersUpdateViewAckEvent;
 import org.moshe.arad.kafka.events.LogInUserAckEvent;
 import org.moshe.arad.kafka.events.LogOutUserAckEvent;
@@ -121,6 +123,11 @@ public class AppInit implements ApplicationContextAware, IAppInitializer {
 	@Autowired
 	private UserPermissionsUpdateAfterAddSecondPlayerEventConfig userPermissionsUpdateAfterAddSecondPlayerEventConfig;
 	
+	private UserPermissionsUpdatedAfterLeftLobbyEventConsumer userPermissionsUpdatedAfterLeftLobbyEventConsumer;
+	
+	@Autowired
+	private UserPermissionsUpdateAfterLeftLobbyEventConfig userPermissionsUpdateAfterLeftLobbyEventConfig;
+	
 	private ExecutorService executor = Executors.newFixedThreadPool(6);
 	
 	private Logger logger = LoggerFactory.getLogger(AppInit.class);
@@ -187,6 +194,7 @@ public class AppInit implements ApplicationContextAware, IAppInitializer {
 			userPermissionsUpdatedAfterCreateRoomEventConsumer = context.getBean(UserPermissionsUpdatedAfterCreateRoomEventConsumer.class);
 			userPermissionsUpdatedAfterAddWatcherEventConsumer = context.getBean(UserPermissionsUpdatedAfterAddWatcherEventConsumer.class);
 			userPermissionsUpdatedAfterAddSecondPlayerEventConsumer = context.getBean(UserPermissionsUpdatedAfterAddSecondPlayerEventConsumer.class);
+			userPermissionsUpdatedAfterLeftLobbyEventConsumer = context.getBean(UserPermissionsUpdatedAfterLeftLobbyEventConsumer.class);
 			
 			logger.info("Initializing new user created event consumer...");
 			initSingleConsumer(newUserCreatedEventConsumer, KafkaUtils.NEW_USER_CREATED_EVENT_TOPIC, newUserCreatedEventConfig, newUserCreatedEventAckQueue);
@@ -204,13 +212,16 @@ public class AppInit implements ApplicationContextAware, IAppInitializer {
 			
 			initSingleConsumer(userPermissionsUpdatedAfterAddSecondPlayerEventConsumer, KafkaUtils.USER_PERMISSIONS_UPDATED_USER_ADDED_SECOND_PLAYER_EVENT_TOPIC, userPermissionsUpdateAfterAddSecondPlayerEventConfig, null);
 			
+			initSingleConsumer(userPermissionsUpdatedAfterLeftLobbyEventConsumer, KafkaUtils.USER_PERMISSIONS_UPDATED_USER_LEFT_LOBBY_EVENT_TOPIC, userPermissionsUpdateAfterLeftLobbyEventConfig, null);
+			
 			executeProducersAndConsumers(Arrays.asList(newUserCreatedEventConsumer, 
 					newUserJoinedLobbyEventConsumer,
 					existingUserJoinedLobbyEventConsumer,
 					loggedInEventConsumer,
 					userPermissionsUpdatedAfterCreateRoomEventConsumer,
 					userPermissionsUpdatedAfterAddWatcherEventConsumer,
-					userPermissionsUpdatedAfterAddSecondPlayerEventConsumer));
+					userPermissionsUpdatedAfterAddSecondPlayerEventConsumer,
+					userPermissionsUpdatedAfterLeftLobbyEventConsumer));
 		}
 	}
 
