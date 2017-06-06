@@ -24,6 +24,7 @@ import org.moshe.arad.kafka.consumers.config.events.UserPermissionsUpdateAfterAd
 import org.moshe.arad.kafka.consumers.config.events.UserPermissionsUpdateAfterAddWatcherEventConfig;
 import org.moshe.arad.kafka.consumers.config.events.UserPermissionsUpdateAfterCreateRoomEventConfig;
 import org.moshe.arad.kafka.consumers.config.events.UserPermissionsUpdateAfterLeftLobbyEventConfig;
+import org.moshe.arad.kafka.consumers.config.events.UserPermissionsUpdateAfterLoggedOutOpenByLeftBeforeGameStartedEventConfig;
 import org.moshe.arad.kafka.consumers.events.ExistingUserJoinedLobbyEventConsumer;
 import org.moshe.arad.kafka.consumers.events.LoggedInEventConsumer;
 import org.moshe.arad.kafka.consumers.events.NewUserCreatedEventConsumer;
@@ -32,6 +33,7 @@ import org.moshe.arad.kafka.consumers.events.UserPermissionsUpdatedAfterAddSecon
 import org.moshe.arad.kafka.consumers.events.UserPermissionsUpdatedAfterAddWatcherEventConsumer;
 import org.moshe.arad.kafka.consumers.events.UserPermissionsUpdatedAfterCreateRoomEventConsumer;
 import org.moshe.arad.kafka.consumers.events.UserPermissionsUpdatedAfterLeftLobbyEventConsumer;
+import org.moshe.arad.kafka.consumers.events.UserPermissionsUpdatedAfterLoggedOutOpenByLeftBeforeGameStartedEventConsumer;
 import org.moshe.arad.kafka.events.GetUsersUpdateViewAckEvent;
 import org.moshe.arad.kafka.events.LogInUserAckEvent;
 import org.moshe.arad.kafka.events.LogOutUserAckEvent;
@@ -128,6 +130,11 @@ public class AppInit implements ApplicationContextAware, IAppInitializer {
 	@Autowired
 	private UserPermissionsUpdateAfterLeftLobbyEventConfig userPermissionsUpdateAfterLeftLobbyEventConfig;
 	
+	private UserPermissionsUpdatedAfterLoggedOutOpenByLeftBeforeGameStartedEventConsumer userPermissionsUpdatedAfterLoggedOutOpenByLeftBeforeGameStartedEventConsumer;
+	
+	@Autowired
+	private UserPermissionsUpdateAfterLoggedOutOpenByLeftBeforeGameStartedEventConfig userPermissionsUpdateAfterLoggedOutOpenByLeftBeforeGameStartedEventConfig;
+	
 	private ExecutorService executor = Executors.newFixedThreadPool(6);
 	
 	private Logger logger = LoggerFactory.getLogger(AppInit.class);
@@ -195,6 +202,7 @@ public class AppInit implements ApplicationContextAware, IAppInitializer {
 			userPermissionsUpdatedAfterAddWatcherEventConsumer = context.getBean(UserPermissionsUpdatedAfterAddWatcherEventConsumer.class);
 			userPermissionsUpdatedAfterAddSecondPlayerEventConsumer = context.getBean(UserPermissionsUpdatedAfterAddSecondPlayerEventConsumer.class);
 			userPermissionsUpdatedAfterLeftLobbyEventConsumer = context.getBean(UserPermissionsUpdatedAfterLeftLobbyEventConsumer.class);
+			userPermissionsUpdatedAfterLoggedOutOpenByLeftBeforeGameStartedEventConsumer = context.getBean(UserPermissionsUpdatedAfterLoggedOutOpenByLeftBeforeGameStartedEventConsumer.class);
 			
 			logger.info("Initializing new user created event consumer...");
 			initSingleConsumer(newUserCreatedEventConsumer, KafkaUtils.NEW_USER_CREATED_EVENT_TOPIC, newUserCreatedEventConfig, newUserCreatedEventAckQueue);
@@ -214,6 +222,8 @@ public class AppInit implements ApplicationContextAware, IAppInitializer {
 			
 			initSingleConsumer(userPermissionsUpdatedAfterLeftLobbyEventConsumer, KafkaUtils.USER_PERMISSIONS_UPDATED_USER_LEFT_LOBBY_EVENT_TOPIC, userPermissionsUpdateAfterLeftLobbyEventConfig, null);
 			
+			initSingleConsumer(userPermissionsUpdatedAfterLoggedOutOpenByLeftBeforeGameStartedEventConsumer, KafkaUtils.USER_PERMISSIONS_UPDATED_LOGGED_OUT_OPENBY_LEFT_BEFORE_GAME_STARTED_EVENT_TOPIC, userPermissionsUpdateAfterLoggedOutOpenByLeftBeforeGameStartedEventConfig, null);
+			
 			executeProducersAndConsumers(Arrays.asList(newUserCreatedEventConsumer, 
 					newUserJoinedLobbyEventConsumer,
 					existingUserJoinedLobbyEventConsumer,
@@ -221,7 +231,8 @@ public class AppInit implements ApplicationContextAware, IAppInitializer {
 					userPermissionsUpdatedAfterCreateRoomEventConsumer,
 					userPermissionsUpdatedAfterAddWatcherEventConsumer,
 					userPermissionsUpdatedAfterAddSecondPlayerEventConsumer,
-					userPermissionsUpdatedAfterLeftLobbyEventConsumer));
+					userPermissionsUpdatedAfterLeftLobbyEventConsumer,
+					userPermissionsUpdatedAfterLoggedOutOpenByLeftBeforeGameStartedEventConsumer));
 		}
 	}
 

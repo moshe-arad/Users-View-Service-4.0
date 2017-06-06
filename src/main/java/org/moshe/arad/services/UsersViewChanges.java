@@ -1,7 +1,9 @@
 package org.moshe.arad.services;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.moshe.arad.entities.BackgammonUser;
 import org.springframework.context.annotation.Scope;
@@ -14,7 +16,7 @@ public class UsersViewChanges {
 	private List<BackgammonUser> newUsersAdded = new ArrayList<>(10000);
 	private List<BackgammonUser> usersLoggedIn = new ArrayList<>(10000);
 	private List<BackgammonUser> usersPermissionsUpdated = new ArrayList<>(10000);
-
+	
 	public UsersViewChanges() {
 	
 	}
