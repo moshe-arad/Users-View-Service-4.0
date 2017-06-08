@@ -2,7 +2,7 @@ package org.moshe.arad.kafka;
 
 public class KafkaUtils {
 
-	public static final String SERVERS = "192.168.1.6:9092,192.168.1.6:9093,192.168.1.6:9094";
+	public static final String SERVERS = "localhost:9092,localhost:9093,localhost:9094";
 	public static final String CREATE_NEW_USER_COMMAND_GROUP = "CreateNewUserCommandGroup";
 	public static final String STRING_DESERIALIZER = "org.apache.kafka.common.serialization.StringDeserializer";
 	public static final String STRING_SERIALIZER = "org.apache.kafka.common.serialization.StringSerializer";
@@ -52,4 +52,6 @@ public class KafkaUtils {
 	public static final String USER_PERMISSIONS_UPDATED_LOGGED_OUT_OPENBY_LEFT_BEFORE_GAME_STARTED_EVENT_TOPIC = "User-Permissions-Updated-Logged-Out-Openby-Left-Before-Game-Started-Event";
 	public static final String USER_PERMISSIONS_UPDATE_AFTER_LOGGED_OUT_OPENBY_LEFT_EVENT_GROUP = "UserPermissionsupdatedAfterLoggedOutOpenbyLeftEventGroup2";
 	public static final String USER_PERMISSIONS_UPDATED_LOGGED_OUT_OPENBY_LEFT_EVENT_TOPIC = "User-Permissions-Updated-Logged-Out-Openby-Left-Event";
+	public static final String USER_PERMISSIONS_UPDATE_AFTER_LOGGED_OUT_WATCHER_LEFT_LAST_EVENT_GROUP = "UserPermissionsUpdatedAfterLoggedOutWatcherLeftLastEventGroup2";
+	public static final String USER_PERMISSIONS_UPDATED_LOGGED_OUT_WATCHER_LEFT_LAST_EVENT_TOPIC = "User-Permissions-Updated-Logged-Out-Watcher-Left-Last-Event";
 }
