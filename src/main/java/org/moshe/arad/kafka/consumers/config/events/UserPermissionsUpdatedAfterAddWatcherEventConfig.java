@@ -5,9 +5,9 @@ import org.moshe.arad.kafka.consumers.config.SimpleConsumerConfig;
 import org.springframework.stereotype.Component;
 
 @Component
-public class UserPermissionsUpdateAfterAddWatcherEventConfig extends SimpleConsumerConfig{
+public class UserPermissionsUpdatedAfterAddWatcherEventConfig extends SimpleConsumerConfig{
 
-	public UserPermissionsUpdateAfterAddWatcherEventConfig() {
+	public UserPermissionsUpdatedAfterAddWatcherEventConfig() {
 		super();
 		super.getProperties().put("group.id", KafkaUtils.USER_PERMISSIONS_UPDATED_ADDED_WATCHER_EVENT_GROUP);
 	}

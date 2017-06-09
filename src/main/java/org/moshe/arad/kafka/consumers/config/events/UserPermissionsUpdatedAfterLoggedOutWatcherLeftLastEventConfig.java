@@ -5,9 +5,9 @@ import org.moshe.arad.kafka.consumers.config.SimpleConsumerConfig;
 import org.springframework.stereotype.Component;
 
 @Component
-public class UserPermissionsUpdateAfterLoggedOutWatcherLeftLastEventConfig extends SimpleConsumerConfig{
+public class UserPermissionsUpdatedAfterLoggedOutWatcherLeftLastEventConfig extends SimpleConsumerConfig{
 
-	public UserPermissionsUpdateAfterLoggedOutWatcherLeftLastEventConfig() {
+	public UserPermissionsUpdatedAfterLoggedOutWatcherLeftLastEventConfig() {
 		super();
 		super.getProperties().put("group.id", KafkaUtils.USER_PERMISSIONS_UPDATE_AFTER_LOGGED_OUT_WATCHER_LEFT_LAST_EVENT_GROUP);
 	}

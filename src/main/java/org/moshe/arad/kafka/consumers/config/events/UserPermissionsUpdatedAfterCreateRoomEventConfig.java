@@ -5,9 +5,9 @@ import org.moshe.arad.kafka.consumers.config.SimpleConsumerConfig;
 import org.springframework.stereotype.Component;
 
 @Component
-public class UserPermissionsUpdateAfterCreateRoomEventConfig extends SimpleConsumerConfig{
+public class UserPermissionsUpdatedAfterCreateRoomEventConfig extends SimpleConsumerConfig{
 
-	public UserPermissionsUpdateAfterCreateRoomEventConfig() {
+	public UserPermissionsUpdatedAfterCreateRoomEventConfig() {
 		super();
 		super.getProperties().put("group.id", KafkaUtils.USER_PERMISSIONS_UPDATE_AFTER_CREATE_ROOM_EVENT_GROUP);
 	}
