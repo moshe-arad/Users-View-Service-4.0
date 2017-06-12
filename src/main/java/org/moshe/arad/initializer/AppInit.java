@@ -30,6 +30,7 @@ import org.moshe.arad.kafka.consumers.config.events.UserPermissionsUpdatedAfterL
 import org.moshe.arad.kafka.consumers.config.events.UserPermissionsUpdatedAfterLoggedOutOpenByLeftLastEventConfig;
 import org.moshe.arad.kafka.consumers.config.events.UserPermissionsUpdatedAfterLoggedOutSecondLeftEventConfig;
 import org.moshe.arad.kafka.consumers.config.events.UserPermissionsUpdatedAfterLoggedOutSecondLeftFirstEventConfig;
+import org.moshe.arad.kafka.consumers.config.events.UserPermissionsUpdatedAfterLoggedOutSecondLeftLastEventConfig;
 import org.moshe.arad.kafka.consumers.config.events.UserPermissionsUpdatedAfterLoggedOutWatcherLeftEventConfig;
 import org.moshe.arad.kafka.consumers.config.events.UserPermissionsUpdatedAfterLoggedOutWatcherLeftLastEventConfig;
 import org.moshe.arad.kafka.consumers.events.ExistingUserJoinedLobbyEventConsumer;
@@ -46,6 +47,7 @@ import org.moshe.arad.kafka.consumers.events.UserPermissionsUpdatedAfterLoggedOu
 import org.moshe.arad.kafka.consumers.events.UserPermissionsUpdatedAfterLoggedOutOpenByLeftLastEventConsumer;
 import org.moshe.arad.kafka.consumers.events.UserPermissionsUpdatedAfterLoggedOutSecondLeftEventConsumer;
 import org.moshe.arad.kafka.consumers.events.UserPermissionsUpdatedAfterLoggedOutSecondLeftFirstEventConsumer;
+import org.moshe.arad.kafka.consumers.events.UserPermissionsUpdatedAfterLoggedOutSecondLeftLastEventConsumer;
 import org.moshe.arad.kafka.consumers.events.UserPermissionsUpdatedAfterWatcherLeftEventConsumer;
 import org.moshe.arad.kafka.consumers.events.UserPermissionsUpdatedAfterWatcherLeftLastEventConsumer;
 import org.moshe.arad.kafka.events.GetUsersUpdateViewAckEvent;
@@ -184,6 +186,11 @@ public class AppInit implements ApplicationContextAware, IAppInitializer {
 	@Autowired
 	private UserPermissionsUpdatedAfterLoggedOutOpenByLeftLastEventConfig userPermissionsUpdatedAfterLoggedOutOpenByLeftLastEventConfig;
 	
+	private UserPermissionsUpdatedAfterLoggedOutSecondLeftLastEventConsumer userPermissionsUpdatedAfterLoggedOutSecondLeftLastEventConsumer;
+	
+	@Autowired
+	private UserPermissionsUpdatedAfterLoggedOutSecondLeftLastEventConfig userPermissionsUpdatedAfterLoggedOutSecondLeftLastEventConfig;
+	
 	private ExecutorService executor = Executors.newFixedThreadPool(6);
 	
 	private Logger logger = LoggerFactory.getLogger(AppInit.class);
@@ -259,6 +266,7 @@ public class AppInit implements ApplicationContextAware, IAppInitializer {
 			userPermissionsUpdatedAfterLoggedOutSecondLeftFirstEventConsumer = context.getBean(UserPermissionsUpdatedAfterLoggedOutSecondLeftFirstEventConsumer.class);
 			userPermissionsUpdatedAfterLoggedOutSecondLeftEventConsumer = context.getBean(UserPermissionsUpdatedAfterLoggedOutSecondLeftEventConsumer.class);
 			userPermissionsUpdatedAfterLoggedOutOpenByLeftLastEventConsumer = context.getBean(UserPermissionsUpdatedAfterLoggedOutOpenByLeftLastEventConsumer.class);
+			userPermissionsUpdatedAfterLoggedOutSecondLeftLastEventConsumer = context.getBean(UserPermissionsUpdatedAfterLoggedOutSecondLeftLastEventConsumer.class);
 			
 			logger.info("Initializing new user created event consumer...");
 			initSingleConsumer(newUserCreatedEventConsumer, KafkaUtils.NEW_USER_CREATED_EVENT_TOPIC, newUserCreatedEventConfig, newUserCreatedEventAckQueue);
@@ -294,6 +302,8 @@ public class AppInit implements ApplicationContextAware, IAppInitializer {
 			
 			initSingleConsumer(userPermissionsUpdatedAfterLoggedOutOpenByLeftLastEventConsumer, KafkaUtils.USER_PERMISSIONS_UPDATED_LOGGED_OUT_OPENBY_LEFT_LAST_EVENT_TOPIC, userPermissionsUpdatedAfterLoggedOutOpenByLeftLastEventConfig, null);
 			
+			initSingleConsumer(userPermissionsUpdatedAfterLoggedOutSecondLeftLastEventConsumer, KafkaUtils.USER_PERMISSIONS_UPDATED_LOGGED_OUT_SECOND_LEFT_LAST_EVENT_TOPIC, userPermissionsUpdatedAfterLoggedOutSecondLeftLastEventConfig, null);
+			
 			executeProducersAndConsumers(Arrays.asList(newUserCreatedEventConsumer, 
 					newUserJoinedLobbyEventConsumer,
 					existingUserJoinedLobbyEventConsumer,
@@ -309,7 +319,8 @@ public class AppInit implements ApplicationContextAware, IAppInitializer {
 					userPermissionsUpdatedAfterLoggedOutOpenByLeftFirstEventConsumer,
 					userPermissionsUpdatedAfterLoggedOutSecondLeftFirstEventConsumer,
 					userPermissionsUpdatedAfterLoggedOutSecondLeftEventConsumer,
-					userPermissionsUpdatedAfterLoggedOutOpenByLeftLastEventConsumer));
+					userPermissionsUpdatedAfterLoggedOutOpenByLeftLastEventConsumer,
+					userPermissionsUpdatedAfterLoggedOutSecondLeftLastEventConsumer));
 		}
 	}
 
