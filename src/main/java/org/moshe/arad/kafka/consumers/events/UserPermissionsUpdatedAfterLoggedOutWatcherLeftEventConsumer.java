@@ -22,19 +22,19 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Component
 @Scope("prototype")
-public class UserPermissionsUpdatedAfterWatcherLeftEventConsumer extends SimpleEventsConsumer {
+public class UserPermissionsUpdatedAfterLoggedOutWatcherLeftEventConsumer extends SimpleEventsConsumer {
 
 	@Autowired
 	private UsersView usersView;
 	
-	Logger logger = LoggerFactory.getLogger(UserPermissionsUpdatedAfterWatcherLeftEventConsumer.class);
+	Logger logger = LoggerFactory.getLogger(UserPermissionsUpdatedAfterLoggedOutWatcherLeftEventConsumer.class);
 	
 	private ConsumerToProducerQueue consumerToProducerQueue;
 	
 	@Autowired
 	private ApplicationContext context;
 	
-	public UserPermissionsUpdatedAfterWatcherLeftEventConsumer() {
+	public UserPermissionsUpdatedAfterLoggedOutWatcherLeftEventConsumer() {
 	}
 
 	@Override

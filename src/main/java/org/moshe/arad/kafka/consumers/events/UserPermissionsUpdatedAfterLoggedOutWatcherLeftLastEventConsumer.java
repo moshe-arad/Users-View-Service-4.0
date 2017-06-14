@@ -1,7 +1,6 @@
 package org.moshe.arad.kafka.consumers.events;
 
 import java.io.IOException;
-import java.util.Arrays;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.moshe.arad.entities.BackgammonUser;
@@ -23,19 +22,19 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Component
 @Scope("prototype")
-public class UserPermissionsUpdatedAfterWatcherLeftLastEventConsumer extends SimpleEventsConsumer {
+public class UserPermissionsUpdatedAfterLoggedOutWatcherLeftLastEventConsumer extends SimpleEventsConsumer {
 
 	@Autowired
 	private UsersView usersView;
 	
-	Logger logger = LoggerFactory.getLogger(UserPermissionsUpdatedAfterWatcherLeftLastEventConsumer.class);
+	Logger logger = LoggerFactory.getLogger(UserPermissionsUpdatedAfterLoggedOutWatcherLeftLastEventConsumer.class);
 	
 	private ConsumerToProducerQueue consumerToProducerQueue;
 	
 	@Autowired
 	private ApplicationContext context;
 	
-	public UserPermissionsUpdatedAfterWatcherLeftLastEventConsumer() {
+	public UserPermissionsUpdatedAfterLoggedOutWatcherLeftLastEventConsumer() {
 	}
 
 	@Override
@@ -44,12 +43,9 @@ public class UserPermissionsUpdatedAfterWatcherLeftLastEventConsumer extends Sim
 			UserPermissionsUpdatedEvent userPermissionsUpdatedEvent = convertJsonBlobIntoEvent(record.value());
 			logger.info("User Permissions Updated Event record recieved, " + userPermissionsUpdatedEvent);	             	                		               
 	    	logger.info("Updating users view in redis data store...");
-	    	UsersViewChanges usersViewChanges = context.getBean(UsersViewChanges.class);
 	    	
 	    	BackgammonUser user = userPermissionsUpdatedEvent.getBackgammonUser();
 	    	usersView.addBackgammonUser(user);
-	    	usersViewChanges.setUsersPermissionsUpdated(Arrays.asList(user));
-	    	usersView.markNeedToUpdateSingleUser(usersViewChanges, user.getUserName());
 	    	logger.info("Update completed...");
 		}
 		catch(Exception ex){
