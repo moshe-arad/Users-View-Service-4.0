@@ -36,6 +36,7 @@ import org.moshe.arad.kafka.consumers.config.events.UserPermissionsUpdatedAfterL
 import org.moshe.arad.kafka.consumers.config.events.UserPermissionsUpdatedAfterOpenByLeftBeforeGameStartedEventConfig;
 import org.moshe.arad.kafka.consumers.config.events.UserPermissionsUpdatedAfterOpenByLeftEventConfig;
 import org.moshe.arad.kafka.consumers.config.events.UserPermissionsUpdatedAfterOpenByLeftFirstEventConfig;
+import org.moshe.arad.kafka.consumers.config.events.UserPermissionsUpdatedAfterSecondLeftEventConfig;
 import org.moshe.arad.kafka.consumers.config.events.UserPermissionsUpdatedAfterSecondLeftFirstEventConfig;
 import org.moshe.arad.kafka.consumers.config.events.UserPermissionsUpdatedAfterWatcherLeftEventConfig;
 import org.moshe.arad.kafka.consumers.config.events.UserPermissionsUpdatedAfterWatcherLeftLastEventConfig;
@@ -57,6 +58,7 @@ import org.moshe.arad.kafka.consumers.events.UserPermissionsUpdatedAfterLoggedOu
 import org.moshe.arad.kafka.consumers.events.UserPermissionsUpdatedAfterOpenByLeftBeforeGameStartedEventConsumer;
 import org.moshe.arad.kafka.consumers.events.UserPermissionsUpdatedAfterOpenByLeftEventConsumer;
 import org.moshe.arad.kafka.consumers.events.UserPermissionsUpdatedAfterOpenByLeftFirstEventConsumer;
+import org.moshe.arad.kafka.consumers.events.UserPermissionsUpdatedAfterSecondLeftEventConsumer;
 import org.moshe.arad.kafka.consumers.events.UserPermissionsUpdatedAfterSecondLeftFirstEventConsumer;
 import org.moshe.arad.kafka.consumers.events.UserPermissionsUpdatedAfterWatcherLeftEventConsumer;
 import org.moshe.arad.kafka.consumers.events.UserPermissionsUpdatedAfterWatcherLeftLastEventConsumer;
@@ -233,6 +235,11 @@ public class AppInit implements ApplicationContextAware, IAppInitializer {
 	@Autowired
 	private UserPermissionsUpdatedAfterSecondLeftFirstEventConfig userPermissionsUpdatedAfterSecondLeftFirstEventConfig;
 	
+	private UserPermissionsUpdatedAfterSecondLeftEventConsumer userPermissionsUpdatedAfterSecondLeftEventConsumer;
+	
+	@Autowired
+	private UserPermissionsUpdatedAfterSecondLeftEventConfig userPermissionsUpdatedAfterSecondLeftEventConfig;
+	
 	private ExecutorService executor = Executors.newFixedThreadPool(6);
 	
 	private Logger logger = LoggerFactory.getLogger(AppInit.class);
@@ -315,6 +322,7 @@ public class AppInit implements ApplicationContextAware, IAppInitializer {
 			userPermissionsUpdatedAfterWatcherLeftEventConsumer = context.getBean(UserPermissionsUpdatedAfterWatcherLeftEventConsumer.class);
 			userPermissionsUpdatedAfterOpenByLeftFirstEventConsumer = context.getBean(UserPermissionsUpdatedAfterOpenByLeftFirstEventConsumer.class);
 			userPermissionsUpdatedAfterSecondLeftFirstEventConsumer = context.getBean(UserPermissionsUpdatedAfterSecondLeftFirstEventConsumer.class);
+			userPermissionsUpdatedAfterSecondLeftEventConsumer = context.getBean(UserPermissionsUpdatedAfterSecondLeftEventConsumer.class);
 			
 			logger.info("Initializing new user created event consumer...");
 			initSingleConsumer(newUserCreatedEventConsumer, KafkaUtils.NEW_USER_CREATED_EVENT_TOPIC, newUserCreatedEventConfig, newUserCreatedEventAckQueue);
@@ -364,6 +372,8 @@ public class AppInit implements ApplicationContextAware, IAppInitializer {
 		
 			initSingleConsumer(userPermissionsUpdatedAfterSecondLeftFirstEventConsumer, KafkaUtils.USER_PERMISSIONS_UPDATED_SECOND_LEFT_FIRST_EVENT_TOPIC, userPermissionsUpdatedAfterSecondLeftFirstEventConfig, null);
 			
+			initSingleConsumer(userPermissionsUpdatedAfterSecondLeftEventConsumer, KafkaUtils.USER_PERMISSIONS_UPDATED_SECOND_LEFT_EVENT_TOPIC, userPermissionsUpdatedAfterSecondLeftEventConfig, null);
+			
 			executeProducersAndConsumers(Arrays.asList(newUserCreatedEventConsumer, 
 					newUserJoinedLobbyEventConsumer,
 					existingUserJoinedLobbyEventConsumer,
@@ -386,7 +396,8 @@ public class AppInit implements ApplicationContextAware, IAppInitializer {
 					userPermissionsUpdatedAfterWatcherLeftLastEventConsumer,
 					userPermissionsUpdatedAfterWatcherLeftEventConsumer,
 					userPermissionsUpdatedAfterOpenByLeftFirstEventConsumer,
-					userPermissionsUpdatedAfterSecondLeftFirstEventConsumer));
+					userPermissionsUpdatedAfterSecondLeftFirstEventConsumer,
+					userPermissionsUpdatedAfterSecondLeftEventConsumer));
 		}
 	}
 
