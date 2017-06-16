@@ -2,7 +2,7 @@ package org.moshe.arad.kafka;
 
 public class KafkaUtils {
 
-	public static final String SERVERS = "192.168.1.6:9092,192.168.1.6:9093,192.168.1.6:9094";
+	public static final String SERVERS = "localhost:9092,localhost:9093,localhost:9094";
 	public static final String CREATE_NEW_USER_COMMAND_GROUP = "CreateNewUserCommandGroup";
 	public static final String STRING_DESERIALIZER = "org.apache.kafka.common.serialization.StringDeserializer";
 	public static final String STRING_SERIALIZER = "org.apache.kafka.common.serialization.StringSerializer";
@@ -48,4 +48,40 @@ public class KafkaUtils {
 	public static final String USER_PERMISSIONS_UPDATED_USER_ADDED_SECOND_PLAYER_EVENT_TOPIC = "User-Permissions-Updated-User-Added-Second-Player-Event";
 	public static final String USER_PERMISSIONS_UPDATE_AFTER_LEFT_LOBBY_EVENT_GROUP = "UserPermissionsUpdateLeftLobbyEventGroup2";
 	public static final String USER_PERMISSIONS_UPDATED_USER_LEFT_LOBBY_EVENT_TOPIC = "User-Permissions-Updated-User-Left-Lobby-Event";
+	public static final String USER_PERMISSIONS_UPDATE_AFTER_LOGGED_OUT_OPENBY_LEFT_BEFORE_GAME_STARTED_EVENT_GROUP = "UserPermissionsUpdtaeAfterLoggedOutOpenByLeftBeforeGameStartedEventGroup2";
+	public static final String USER_PERMISSIONS_UPDATED_LOGGED_OUT_OPENBY_LEFT_BEFORE_GAME_STARTED_EVENT_TOPIC = "User-Permissions-Updated-Logged-Out-Openby-Left-Before-Game-Started-Event";
+	public static final String USER_PERMISSIONS_UPDATE_AFTER_LOGGED_OUT_OPENBY_LEFT_EVENT_GROUP = "UserPermissionsupdatedAfterLoggedOutOpenbyLeftEventGroup2";
+	public static final String USER_PERMISSIONS_UPDATED_LOGGED_OUT_OPENBY_LEFT_EVENT_TOPIC = "User-Permissions-Updated-Logged-Out-Openby-Left-Event";
+	public static final String USER_PERMISSIONS_UPDATE_AFTER_LOGGED_OUT_WATCHER_LEFT_LAST_EVENT_GROUP = "UserPermissionsUpdatedAfterLoggedOutWatcherLeftLastEventGroup2";
+	public static final String USER_PERMISSIONS_UPDATED_LOGGED_OUT_WATCHER_LEFT_LAST_EVENT_TOPIC = "User-Permissions-Updated-Logged-Out-Watcher-Left-Last-Event";
+	public static final String USER_PERMISSIONS_UPDATE_AFTER_LOGGED_OUT_WATCHER_LEFT_EVENT_GROUP = "UserPermissionsUpdatedAfterLoggedOutWatcherLeftEventGroup2";
+	public static final String USER_PERMISSIONS_UPDATED_LOGGED_OUT_WATCHER_LEFT_EVENT_TOPIC = "User-Permissions-Updated-Logged-Out-Watcher-Left-Event";
+	public static final String USER_PERMISSIONS_UPDATED_AFTER_LOGGED_OUT_OPENBY_LEFT_FIRST_EVENT_GROUP = "UserPermissionsUpdatedAfterLoggedOutOpenbyLeftFirstEventGroup2";
+	public static final String USER_PERMISSIONS_UPDATED_LOGGED_OUT_OPENBY_LEFT_FIRST_EVENT_TOPIC = "User-Permissions-Updated-Logged-Out-Openby-Left-First-Event";
+	public static final String USER_PERMISSIONS_UPDATED_AFTER_LOGGED_OUT_SECOND_LEFT_FIRST_EVENT_GROUP = "UserPermissionsUpdatedAfterLoggedOutSecondLeftFirstEventGroup2";
+	public static final String USER_PERMISSIONS_UPDATED_LOGGED_OUT_SECOND_LEFT_FIRST_EVENT_TOPIC = "User-Permissions-Updated-Logged-Out-Second-Left-First-Event";
+	public static final String USER_PERMISSIONS_UPDATED_AFTER_LOGGED_OUT_SECOND_LEFT_EVENT_GROUP = "UserPermissionsUpdatedAfterLoggedOutSecondLeftEventGroup2";
+	public static final String USER_PERMISSIONS_UPDATED_LOGGED_OUT_SECOND_LEFT_EVENT_TOPIC = "User-Permissions-Updated-Logged-Out-Second-Left-Event";
+	public static final String USER_PERMISSIONS_UPDATE_AFTER_LOGGED_OUT_OPENBY_LEFT_LAST_EVENT_GROUP = "UserPermissionsUpdatedAfterLoggedOutOpenbyLeftLastEventGroup2";
+	public static final String USER_PERMISSIONS_UPDATED_LOGGED_OUT_OPENBY_LEFT_LAST_EVENT_TOPIC = "User-Permissions-Updated-Logged-Out-Openby-Left-Last-Event";
+	public static final String USER_PERMISSIONS_UPDATED_AFTER_LOGGED_OUT_SECOND_LEFT_LAST_EVENT_GROUP = "UserPermissionsUpdatedAfterLoggedOutSecondLeftLastEventGroup2";
+	public static final String USER_PERMISSIONS_UPDATED_LOGGED_OUT_SECOND_LEFT_LAST_EVENT_TOPIC = "User-Permissions-Updated-Logged-Out-Second-Left-Last-Event";
+	public static final String USER_PERMISSIONS_UPDATE_AFTER_OPENBY_LEFT_BEFORE_GAME_STARTED_EVENT_GROUP = "UserPermissionsUpdatedAfterOpenbyLeftBeforeGameStartedEventGroup2";
+	public static final String USER_PERMISSIONS_UPDATED_OPENBY_LEFT_BEFORE_GAME_STARTED_EVENT_TOPIC = "User-Permissions-Updated-Openby-Left-Before-Game-Started-Event";
+	public static final String USER_PERMISSIONS_UPDATE_AFTER_OPENBY_LEFT_EVENT_GROUP = "UserPermissionsUpdatedAfterOpenbyLeftEventGroup2";
+	public static final String USER_PERMISSIONS_UPDATED_OPENBY_LEFT_EVENT_TOPIC = "User-Permissions-Updated-Openby-Left-Event";
+	public static final String USER_PERMISSIONS_UPDATE_AFTER_WATCHER_LEFT_LAST_EVENT_GROUP = "UserPermissionsUpdatedWatcherLeftLastEventGroup2";
+	public static final String USER_PERMISSIONS_UPDATED_WATCHER_LEFT_LAST_EVENT_TOPIC = "User-Permissions-Updated-Watcher-Left-Last-Event";
+	public static final String USER_PERMISSIONS_UPDATE_AFTER_WATCHER_LEFT_EVENT_GROUP = "UserPermissionsUpdatedWatcherLeftEventGroup2";
+	public static final String USER_PERMISSIONS_UPDATED_WATCHER_LEFT_EVENT_TOPIC = "User-Permissions-Updated-Watcher-Left-Event";
+	public static final String USER_PERMISSIONS_UPDATED_AFTER_OPENBY_LEFT_FIRST_EVENT_GROUP = "UserPermissionsUpdatedOpenbyLeftFirstEventGroup2";
+	public static final String USER_PERMISSIONS_UPDATED_OPENBY_LEFT_FIRST_EVENT_TOPIC = "User-Permissions-Updated-Openby-Left-First-Event";
+	public static final String USER_PERMISSIONS_UPDATED_AFTER_SECOND_LEFT_FIRST_EVENT_GROUP = "UserPermissionsUpdatedAfterSecondLeftFirstEventGroup2";
+	public static final String USER_PERMISSIONS_UPDATED_SECOND_LEFT_FIRST_EVENT_TOPIC = "User-Permissions-Updated-Second-Left-First-Event";
+	public static final String USER_PERMISSIONS_UPDATED_AFTER_SECOND_LEFT_EVENT_GROUP = "UserPermissionsUpdatedAfterSecondLeftEventGroup2";
+	public static final String USER_PERMISSIONS_UPDATED_SECOND_LEFT_EVENT_TOPIC = "User-Permissions-Updated-Second-Left-Event";
+	public static final String USER_PERMISSIONS_UPDATE_AFTER_OPENBY_LEFT_LAST_EVENT_GROUP = "UserPermissionsUpdatedOpenbyLeftLastEventGroup2";
+	public static final String USER_PERMISSIONS_UPDATED_OPENBY_LEFT_LAST_EVENT_TOPIC = "User-Permissions-Updated-Openby-Left-Last-Event";
+	public static final String USER_PERMISSIONS_UPDATED_AFTER_SECOND_LEFT_LAST_EVENT_GROUP = "UserPermissionsSecondLeftLastEventGroup2";
+	public static final String USER_PERMISSIONS_UPDATED_SECOND_LEFT_LAST_EVENT_TOPIC = "User-Permissions-Updated-Second-Left-Last-Event";
 }
