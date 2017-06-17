@@ -1,4 +1,4 @@
-package org.moshe.arad.services;
+package org.moshe.arad.view.utils;
 
 import org.moshe.arad.entities.BackgammonUser;
 import org.slf4j.Logger;
