@@ -7,14 +7,14 @@ import org.moshe.arad.entities.BackgammonUser;
 import org.springframework.stereotype.Component;
 
 @Component
-public class NewUserCreatedEvent extends BackgammonEvent {
+public class NewUserCreatedEventAck extends BackgammonEvent {
 
 	BackgammonUser backgammonUser;
 
-	public NewUserCreatedEvent() {
+	public NewUserCreatedEventAck() {
 	}
 
-	public NewUserCreatedEvent(UUID uuid, int serviceId, int eventId, Date arrived, String clazz,
+	public NewUserCreatedEventAck(UUID uuid, int serviceId, int eventId, Date arrived, String clazz,
 			BackgammonUser backgammonUser) {
 		super(uuid, serviceId, eventId, arrived, clazz);
 		this.backgammonUser = backgammonUser;
