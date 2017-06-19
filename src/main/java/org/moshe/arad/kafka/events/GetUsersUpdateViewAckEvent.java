@@ -1,6 +1,6 @@
 package org.moshe.arad.kafka.events;
 
-import org.moshe.arad.services.UsersViewChanges;
+import org.moshe.arad.view.utils.UsersViewChanges;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 

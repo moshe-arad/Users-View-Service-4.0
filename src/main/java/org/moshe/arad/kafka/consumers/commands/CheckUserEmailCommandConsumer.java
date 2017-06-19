@@ -7,7 +7,7 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.moshe.arad.kafka.ConsumerToProducerQueue;
 import org.moshe.arad.kafka.commands.CheckUserEmailCommand;
 import org.moshe.arad.kafka.events.UserEmailAckEvent;
-import org.moshe.arad.services.UsersView;
+import org.moshe.arad.view.utils.UsersView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
